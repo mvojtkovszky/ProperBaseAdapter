@@ -1,17 +1,16 @@
 # ProperBaseAdapter
 Straightforward, fast, easy to use and adaptable generic RecyclerView adapter.
-You'll never have to create another adapter or define types of adapter items again
+You'll never have to create another RecyclerView adapter or define types of items in it ever again.
 
 ## How do I get started
 
-1. Define a bunch of Adapter view items by extending AdapterItem class
+1. Define a bunch of Adapter view items by extending AdapterItem class, and let it know what view you type you want for it
 ``` kotlin
 class ImageViewRecyclerItem(private val drawable: Drawable?): AdapterItem<ImageView>() {
     // here we define how view is created
     override fun getNewView(parent: ViewGroup): ImageView {
         return ImageView(parent.context)
     }
-
     // here we define how view will look like
     override fun onViewBound(view: ImageView) {
         view.setImageDrawable(drawable)
@@ -20,40 +19,41 @@ class ImageViewRecyclerItem(private val drawable: Drawable?): AdapterItem<ImageV
 }
 ```
 
-or inflate your own view and do whatever you please with it
+Or inflate your own view and do whatever you please with it.
 ``` kotlin
 class RowRecyclerItem(private val text: String): AdapterItem<View>() {
     override fun getNewView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).inflate(android.R.layout.activity_list_item, parent, false)
     }
-
     override fun onViewBound(view: View) {
         view.findViewById<TextView>(R.id.text1).text = text
     }
 }
 ```
 
-there are a bunch of other methods you can override to fine-tune behaviour of your adapter items
+there are other methods you can override to fine-tune behaviour of your adapter items
 ``` kotlin
-    override fun onItemViewAttached(view: View) { }
-    override fun onItemViewDetached(view: View) { }
-    override fun onItemViewRecycled(view: View) { }
-    override fun onFailedToRecycleView(view: View) { }
+override fun onItemViewAttached(view: YourViewType) { }
+override fun onItemViewDetached(view: YourViewType) { }
+override fun onItemViewRecycled(view: YourViewType) { }
+override fun onFailedToRecycleView(view: YourViewType) { }
 ```
 
-2. Have your Activity or Fragment implement BaseRecyclerViewImplementation, link a RecyclerView and throw in a dataset at will 
+2. Have your Activity or Fragment implement BaseRecyclerViewImplementation, 
+link a RecyclerView and throw in a dataset at will , multiple types at once and library will do the rest
 ``` kotlin
 class MainActivity : AppCompatActivity(), BaseRecyclerViewImplementation {
   ...
+  // let the library know what the 
   override fun getRecyclerView(): RecyclerView? {
         return findViewById(R.id.recyclerView)
   }
     
+  // and simply assemble data at will
   override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
     data.add(
-        ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
-            .withMargins(
-                topMargin = resources.getDimensionPixelSize(R.dimen.dp16),
+            ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
+            .withMargins(topMargin = resources.getDimensionPixelSize(R.dimen.dp16),
                 endMargin = resources.getDimensionPixelSize(R.dimen.dp16)))
                 
     for (i in 1..10) {
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), BaseRecyclerViewImplementation {
   ...
 ```
 
-3. Simply calling refreshRecyclerView method will do the rest, for example right when the app starts
+3. Simply calling refreshRecyclerView method will do the rest and populate recycler view with given data.
 ``` kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
