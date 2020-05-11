@@ -8,6 +8,9 @@ import kotlin.reflect.KClass
 
 /**
  * Created by Marcel Vojtkovszky on 2019/07/23.
+ *
+ * Represents an item for an adapter.
+ * It contains both a view holder and logic to populate or manipulate the view.
  */
 @Suppress("UNCHECKED_CAST")
 abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV> {
@@ -46,19 +49,20 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
 
     /**
      * Called when underlying adapter calls
-     * [BaseAdapter.onCreateViewHolder]
-     * indicating this item has to provide a view on demand.
+     * [ProperBaseAdapter.onCreateViewHolder]
+     * indicating item has to provide a view on demand.
      *
+     * Important!!!
      * Note that adapter might call this method for any of the adapter item matching the view
      * type id associated with it, just because it wants to have a new instance of view itself,
-     * we shouldn't care or set any dynamic data to it.
+     * therefore we shouldn't set any dynamic data to it.
      */
     abstract fun getNewView(parent: ViewGroup): AIV
 
     /**
      * Called when underlying adapter triggers
-     * [BaseAdapter.onBindViewHolder]
-     * indicating this item should manipulate the view
+     * [ProperBaseAdapter.onBindViewHolder]
+     * indicating this item should populate the view
      *
      * @param view view provided with [AdapterItem.getNewView]
      */
@@ -82,7 +86,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     /**
      * Result from [AdapterViewHolder.OnCallbackListener] interface
      */
-    override fun onFailedToRecycleView(view: AIV) {}
+    override fun onItemViewFailedToRecycle(view: AIV) {}
 
     // called when recycler view calls onBindViewHolder on this item.
     internal fun bind(viewHolder: AdapterViewHolder<View>, position: Int) {
@@ -117,10 +121,10 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     }
 
     /**
-     * Define custom margins for this item to be applied when view gets created.
+     * Define custom margins for this item to be applied when view gets bound.
      */
-    fun withMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0, bottomMargin: Int = 0
-    ): AdapterItem<AIV> {
+    fun withMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0,
+                    bottomMargin: Int = 0): AdapterItem<AIV> {
         this.startMargin = startMargin
         this.topMargin = topMargin
         this.endMargin = endMargin
@@ -139,7 +143,8 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
 
     /**
      * Define a tag to be set to view bound to this item.
-     * This gets useful if we use multiple items of same type and use same callback to it
+     * This gets useful if we want to retrieve an item from adapter by using
+     * [ProperBaseAdapter.getItemByViewTag]
      */
     fun withViewTag(viewTag: Any?): AdapterItem<AIV> {
         this.viewTag = viewTag

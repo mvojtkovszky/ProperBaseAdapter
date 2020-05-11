@@ -2,6 +2,8 @@ package com.vojtkovszky.properbaseadapter
 
 /**
  * Created by Marcel Vojtkovszky on 2019/07/30.
+ *
+ * Define different behaviours of dispatching changes to the adapter when data set changes
  */
 enum class DataDispatchMethod {
     /**

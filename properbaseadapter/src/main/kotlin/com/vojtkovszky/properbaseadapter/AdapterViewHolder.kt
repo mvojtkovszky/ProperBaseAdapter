@@ -6,6 +6,9 @@ import java.util.*
 
 /**
  * Created by Marcel Vojtkovszky on 2019/07/23.
+ *
+ * Class representing RecyclerView.ViewHolder, with added callbacks from adapter towards
+ * the view holder.
  */
 class AdapterViewHolder<AIV: View>(
     itemView: View,
@@ -37,15 +40,15 @@ class AdapterViewHolder<AIV: View>(
         callbackListener?.onItemViewRecycled(itemView as AIV)
     }
 
-    fun onItemViewRecycleFailed() {
+    fun onItemViewFailedToRecycle() {
         @Suppress("UNCHECKED_CAST")
-        callbackListener?.onFailedToRecycleView(itemView as AIV)
+        callbackListener?.onItemViewFailedToRecycle(itemView as AIV)
     }
 
     interface OnCallbackListener<in AIV: View> {
         fun onItemViewAttached(view: AIV)
         fun onItemViewDetached(view: AIV)
         fun onItemViewRecycled(view: AIV)
-        fun onFailedToRecycleView(view: AIV)
+        fun onItemViewFailedToRecycle(view: AIV)
     }
 }

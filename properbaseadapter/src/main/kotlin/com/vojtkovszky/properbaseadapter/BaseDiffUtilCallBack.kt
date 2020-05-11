@@ -4,6 +4,9 @@ import androidx.recyclerview.widget.DiffUtil
 
 /**
  * Created by Marcel Vojtkovszky on 2019/07/23.
+ *
+ * Used to compare adapter's data sets when dispatching changes, allowing only items that
+ * changed to be updated.
  */
 internal class BaseDiffUtilCallBack(
     private val oldList: List<AdapterItem<*>>,

@@ -1,17 +1,16 @@
 # ProperBaseAdapter
-Straightforward, fast, easy to use and adaptable generic RecyclerView adapter.
-You'll never have to create another RecyclerView adapter or define types of items in it ever again.
+Straightforward, fast, easy to use and adaptable generic RecyclerView adapter.\
+Never create another RecyclerView adapter again.
 
-## How do I get started
-
-1. Define a bunch of Adapter view items by extending AdapterItem class, and let it know what view you type you want for it
+## How does it work?
+1. Define an AdapterItem representing an adapter item view type.
 ``` kotlin
 class ImageViewRecyclerItem(private val drawable: Drawable?): AdapterItem<ImageView>() {
     // here we define how view is created
     override fun getNewView(parent: ViewGroup): ImageView {
         return ImageView(parent.context)
     }
-    // here we define how view will look like
+    // here we populate the view
     override fun onViewBound(view: ImageView) {
         view.setImageDrawable(drawable)
         view.scaleType = ImageView.ScaleType.CENTER
@@ -19,9 +18,9 @@ class ImageViewRecyclerItem(private val drawable: Drawable?): AdapterItem<ImageV
 }
 ```
 
-Or inflate your own view and do whatever you please with it.
+Or inflate your own view.
 ``` kotlin
-class RowRecyclerItem(private val text: String): AdapterItem<View>() {
+class TextRowRecyclerItem(private val text: String): AdapterItem<View>() {
     override fun getNewView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).inflate(android.R.layout.activity_list_item, parent, false)
     }
@@ -31,43 +30,39 @@ class RowRecyclerItem(private val text: String): AdapterItem<View>() {
 }
 ```
 
-there are other methods you can override to fine-tune behaviour of your adapter items
+AdapterItem has other methods you can override to fine-tune behaviour based on the adapter's callbacks.
 ``` kotlin
-override fun onItemViewAttached(view: YourViewType) { }
-override fun onItemViewDetached(view: YourViewType) { }
-override fun onItemViewRecycled(view: YourViewType) { }
-override fun onFailedToRecycleView(view: YourViewType) { }
+override fun onItemViewAttached(view: YourView) { }
+override fun onItemViewDetached(view: YourView) { }
+override fun onItemViewRecycled(view: YourView) { }
+override fun onItemViewFailedToRecycle(view: YourView) { }
 ```
 
-2. Have your Activity or Fragment implement BaseRecyclerViewImplementation, 
-link a RecyclerView and throw in a dataset at will , multiple types at once and library will do the rest
+2. Have your Activity or Fragment implement BaseRecyclerViewImplementation .
 ``` kotlin
-class MainActivity : AppCompatActivity(), BaseRecyclerViewImplementation {
+class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
   ...
-  // let the library know what the 
+  // library needs to know how to locate a RecyclerView
   override fun getRecyclerView(): RecyclerView? {
         return findViewById(R.id.recyclerView)
   }
-    
-  // and simply assemble data at will
+
+  // add items to provided data list, those will be added to the adapter.
   override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
-    data.add(
-            ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
-            .withMargins(topMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                endMargin = resources.getDimensionPixelSize(R.dimen.dp16)))
+    data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
+        .withMargins(topMargin = resources.getDimensionPixelSize(R.dimen.dp16))
                 
     for (i in 1..10) {
-        data.add(
-            TextViewRecyclerItem("Text item $i")
-                .withMargins(
-                    startMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                    topMargin = resources.getDimensionPixelSize(R.dimen.dp8),
-                    endMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                    bottomMargin = resources.getDimensionPixelSize(R.dimen.dp8))
-                //.withAnimation(android.R.anim.fade_in)
-                .withClickListener(View.OnClickListener {
-                    Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
-                }))
+        data.add(TextViewRecyclerItem("Text item $i")
+            .withMargins(
+                startMargin = resources.getDimensionPixelSize(R.dimen.dp16),
+                topMargin = resources.getDimensionPixelSize(R.dimen.dp8),
+                endMargin = resources.getDimensionPixelSize(R.dimen.dp16),
+                bottomMargin = resources.getDimensionPixelSize(R.dimen.dp8))
+            .withAnimation(android.R.anim.fade_in)
+            .withClickListener(View.OnClickListener {
+                Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
+            }))
     }
     
     data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now)))
@@ -77,18 +72,17 @@ class MainActivity : AppCompatActivity(), BaseRecyclerViewImplementation {
   ...
 ```
 
-3. Simply calling refreshRecyclerView method will do the rest and populate recycler view with given data.
+3. Simply calling refreshRecyclerView method will do the rest and populate recycler view with provided data.
 ``` kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        refreshRecyclerView()
-    }
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+    refreshRecyclerView()
+}
 ```
 
 ## Nice! How do I get started?
 Add it in your root build.gradle at the end of repositories:
-
 ``` gradle
 allprojects {
   repositories {
@@ -101,6 +95,6 @@ allprojects {
 And make sure this is in your app build.gradle
 ``` gradle
 dependencies {
-  implementation 'com.github.mvojtkovszky:ProperBaseAdapter:1.0.0'
+  implementation 'com.github.mvojtkovszky:ProperBaseAdapter:1.1.0'
 }
 ```

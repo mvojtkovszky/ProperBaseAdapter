@@ -12,12 +12,12 @@ import java.lang.Exception
  * Convenient interface to use the library in the most straight forward way.
  * We can, however, choose not to use it and therefore and use ProperBaseAdapter as we please.
  */
-interface BaseRecyclerViewImplementation {
+interface ProperBaseAdapterImplementation {
 
     /**
      * Define list of Adapter Items.
      * Supplied argument is a conveniently typed empty list which we add items to and return
-     * it as a result in the end
+     * it as a result in the end.
      */
     fun getAdapterData(data: MutableList<AdapterItem<*>> = mutableListOf()): MutableList<AdapterItem<*>>
 
@@ -27,7 +27,7 @@ interface BaseRecyclerViewImplementation {
     fun getRecyclerView(): RecyclerView?
 
     /**
-     * Retrieve an adapter. Will only exist if RecyclerView is setup and populated
+     * Retrieve an adapter. Will only exist if RecyclerView is set-up and populated.
      */
     fun getAdapter(): ProperBaseAdapter? {
         return if (getRecyclerView()?.adapter != null && getRecyclerView()?.adapter is ProperBaseAdapter)
@@ -81,7 +81,7 @@ interface BaseRecyclerViewImplementation {
                 }
             }
         } catch (ignore: Exception) {
-            // views may no longer be valid
+            // views may no longer be valid, simply let it fail
         }
     }
 }
