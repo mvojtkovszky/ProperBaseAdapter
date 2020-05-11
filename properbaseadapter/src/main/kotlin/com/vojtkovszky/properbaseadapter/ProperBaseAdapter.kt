@@ -38,24 +38,29 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         private const val TAG = "ProperBaseAdapter"
         private const val VIEW_TYPE_ID_UNSET = -1
     }
-    //-------------------
-    // [END CONSTRUCT]
-    //-------------------
 
-
-    //------------------------
-    // [BEGIN PUBLIC METHODS]
-    //------------------------
+    //region PUBLIC METHODS
+    /**
+     * Retrieve instance of [AdapterItem] at a given position.
+     * If position is out of bounds, null will be returned
+     */
     fun getItemAt(position: Int): AdapterItem<*>? {
-        return if (position > data.size) null
+        return if (position > data.size || position < 0) null
         else data[position]
     }
 
+    /**
+     * Retrieve type of [AdapterItem] at a given position.
+     * If position is out of bounds, [Nothing.annotationClass] will be returned
+     */
     fun getItemTypeAt(position: Int): KClass<*> {
-        return if (position > data.size) Nothing::class
+        return if (position > data.size || position < 0) Nothing::class
         else data[position]::class
     }
 
+    /**
+     * Retrieve instance of [AdapterItem] by a given tag or null if no such item is found
+     */
     fun getItemByViewTag(viewTag: Any): AdapterItem<*>? {
         for (position in 0 until itemCount) {
             data[position].let {
@@ -65,7 +70,11 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         return null
     }
 
-    fun getPositionWithItemWithViewTag(viewTag: Any): Int? {
+    /**
+     * Retrieve an indexed position for an [AdapterItem] with a given tag or null if no such item
+     * is found
+     */
+    fun getPositionForItemWithViewTag(viewTag: Any): Int? {
         for (position in 0 until itemCount) {
             data[position].let {
                 if (it.viewTag == viewTag) return position
@@ -74,6 +83,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         return null
     }
 
+    /**
+     * Set items to the the adapter and define whether [RecyclerView.Adapter.notifyDataSetChanged]
+     * should be called afterwards.
+     */
     fun setItems(newData: MutableList<AdapterItem<*>>, notifyDataSetChanged: Boolean = true) {
         data = newData
 
@@ -85,6 +98,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         }
     }
 
+    /**
+     * Replace data with given items and dispatch changes in adapter only for items that have
+     * changed (Based on evaluation from [BaseDiffUtilCallBack])
+     */
     fun updateItems(newItems: List<AdapterItem<*>>) {
         val diffResult = DiffUtil.calculateDiff(BaseDiffUtilCallBack(data, newItems), false)
 
@@ -101,6 +118,13 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         }
     }
 
+    /**
+     * Add new items at the end of existing data set and define whether
+     * [RecyclerView.Adapter.notifyDataSetChanged] should be called afterwards.
+     *
+     * TODO: Insert should be possible too, just need to look into modifying
+     * [addDefaultToDataViewTypeIds] method
+     */
     fun addItems(dataObjects: List<AdapterItem<*>>?, notifyItemRangeChanged: Boolean = true) {
         if (dataObjects == null || dataObjects.isEmpty()) {
             return
@@ -115,6 +139,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         }
     }
 
+    /**
+     * Remove all items from adapter and define whether [RecyclerView.Adapter.notifyDataSetChanged]
+     * should be called afterwards.
+     */
     fun removeAllItems(notifyDataSetChanged: Boolean = true) {
         val numItems = data.size
         data.clear()
@@ -127,6 +155,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         }
     }
 
+    /**
+     * Remove items from adapter by providing starting position and amount.
+     * Also define whether [RecyclerView.Adapter.notifyDataSetChanged] should be called afterwards.
+     */
     fun removeItems(fromPosition: Int, itemCount: Int = 1, notifyDataSetChanged: Boolean = true) {
         if (itemCount <= 0) {
             return
@@ -144,19 +176,17 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         }
     }
 
+    /**
+     * Call [RecyclerView.Adapter.notifyItemChanged] for an item matching given tag.
+     */
     fun notifyItemWithViewTagChanged(viewTag: Any) {
         for (position in 0 until itemCount) {
             if (viewTag == data[position].viewTag) notifyItemChanged(position)
         }
     }
-    //------------------------
-    // [END PUBLIC METHODS]
-    //------------------------
+    //endregion
 
-
-    //--------------------------------
-    // [BEGIN PARENT ADAPTER METHODS]
-    //--------------------------------
+    //region PARENT ADAPTER METHODS
     override fun getItemViewType(position: Int): Int {
         // if it exists in cache, just return it
         if (hasCachedDataTypeIdForPosition(position)) {
@@ -172,8 +202,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdapterViewHolder<View> {
-        // ask first available adapter item using same view type for a new view as
-        // the adapter item knows details about it.
+        // ask first available adapter item using same view type to generate us a new view.
         val firstItemMatchingViewType = getFirstItemMatchingViewType(viewType)
         return AdapterViewHolder(data[firstItemMatchingViewType].getNewView(parent), viewType)
     }
@@ -197,7 +226,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     }
 
     override fun onFailedToRecycleView(holder: AdapterViewHolder<View>): Boolean {
-        holder.onItemViewRecycleFailed()
+        holder.onItemViewFailedToRecycle()
         return super.onFailedToRecycleView(holder)
     }
 
@@ -207,7 +236,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             // and call onViewBound on adapter item
             adapterItem.bind(viewHolder, position)
 
-            // retrieve params or create new
+            // retrieve params or create new. By default parameters take full available width
             val itemViewLayoutParams =
                 if (viewHolder.itemView.layoutParams != null) viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
                 else RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -244,14 +273,9 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     override fun getItemCount(): Int {
         return data.size
     }
-    //--------------------------------
-    // [END PARENT ADAPTER METHODS]
-    //--------------------------------
+    //endregion
 
-
-    //--------------------------
-    // [BEGIN PRIVATE METHODS]
-    //--------------------------
+    //region PRIVATE METHODS
     private fun getFirstItemMatchingViewType(viewType: Int): Int {
         for (i in data.indices) {
             if (viewType == getItemViewType(i)) {
@@ -314,4 +338,5 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             dataViewTypeIds.size > position && dataViewTypeIds[position] != VIEW_TYPE_ID_UNSET
         else false
     }
+    //endregion
 }
