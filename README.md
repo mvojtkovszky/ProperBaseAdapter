@@ -134,6 +134,6 @@ allprojects {
 And make sure this is in your app build.gradle
 ``` gradle
 dependencies {
-  implementation 'com.github.mvojtkovszky:ProperBaseAdapter:1.1.0'
+  implementation 'com.github.mvojtkovszky:ProperBaseAdapter:{$latest_version}'
 }
 ```
