@@ -50,15 +50,6 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     }
 
     /**
-     * Retrieve type of [AdapterItem] at a given position.
-     * If position is out of bounds, [Nothing.annotationClass] will be returned
-     */
-    fun getItemTypeAt(position: Int): KClass<*> {
-        return if (position > data.size || position < 0) Nothing::class
-        else data[position]::class
-    }
-
-    /**
      * Retrieve instance of [AdapterItem] by a given tag or null if no such item is found
      */
     fun getItemByViewTag(viewTag: Any): AdapterItem<*>? {
@@ -68,6 +59,15 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             }
         }
         return null
+    }
+
+    /**
+     * Retrieve type of [AdapterItem] at a given position.
+     * If position is out of bounds, [Nothing.annotationClass] will be returned
+     */
+    fun getItemTypeAt(position: Int): KClass<*> {
+        return if (position > data.size || position < 0) Nothing::class
+        else data[position]::class
     }
 
     /**
@@ -81,6 +81,28 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             }
         }
         return null
+    }
+
+
+    /**
+     * Add new items at the end of existing data set and define whether
+     * [RecyclerView.Adapter.notifyDataSetChanged] should be called afterwards.
+     *
+     * TODO: Insert should be possible too, just need to look into modifying
+     * [addDefaultToDataViewTypeIds] method
+     */
+    fun addItems(dataObjects: List<AdapterItem<*>>?, notifyItemRangeChanged: Boolean = true) {
+        if (dataObjects == null || dataObjects.isEmpty()) {
+            return
+        }
+
+        val addStartPosition = if (data.isEmpty()) 0 else data.size
+        data.addAll(dataObjects)
+        addDefaultToDataViewTypeIds(addStartPosition)
+
+        if (notifyItemRangeChanged) {
+            notifyItemRangeChanged(addStartPosition, dataObjects.size)
+        }
     }
 
     /**
@@ -115,27 +137,6 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             diffResult.dispatchUpdatesTo(this)
         } catch (exception: Exception) {
             exception.printStackTrace()
-        }
-    }
-
-    /**
-     * Add new items at the end of existing data set and define whether
-     * [RecyclerView.Adapter.notifyDataSetChanged] should be called afterwards.
-     *
-     * TODO: Insert should be possible too, just need to look into modifying
-     * [addDefaultToDataViewTypeIds] method
-     */
-    fun addItems(dataObjects: List<AdapterItem<*>>?, notifyItemRangeChanged: Boolean = true) {
-        if (dataObjects == null || dataObjects.isEmpty()) {
-            return
-        }
-
-        val addStartPosition = if (data.isEmpty()) 0 else data.size
-        data.addAll(dataObjects)
-        addDefaultToDataViewTypeIds(addStartPosition)
-
-        if (notifyItemRangeChanged) {
-            notifyItemRangeChanged(addStartPosition, dataObjects.size)
         }
     }
 

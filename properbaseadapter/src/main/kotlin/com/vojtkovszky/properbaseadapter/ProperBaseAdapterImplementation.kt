@@ -15,24 +15,18 @@ import java.lang.Exception
 interface ProperBaseAdapterImplementation {
 
     /**
+     * Retrieve an adapter. Will only exist if RecyclerView is set-up and populated.
+     */
+    fun getAdapter(): ProperBaseAdapter? {
+        return if (adapterExistsAndSet()) getRecyclerView()?.adapter as ProperBaseAdapter else null
+    }
+
+    /**
      * Define list of Adapter Items.
      * Supplied argument is a conveniently typed empty list which we add items to and return
      * it as a result in the end.
      */
     fun getAdapterData(data: MutableList<AdapterItem<*>> = mutableListOf()): MutableList<AdapterItem<*>>
-
-    /**
-     * Define a recycler view.
-     */
-    fun getRecyclerView(): RecyclerView?
-
-    /**
-     * Retrieve an adapter. Will only exist if RecyclerView is set-up and populated.
-     */
-    fun getAdapter(): ProperBaseAdapter? {
-        return if (getRecyclerView()?.adapter != null && getRecyclerView()?.adapter is ProperBaseAdapter)
-            getRecyclerView()?.adapter as ProperBaseAdapter else null
-    }
 
     /**
      * Define a layout manager.
@@ -43,45 +37,78 @@ interface ProperBaseAdapterImplementation {
     }
 
     /**
+     * Define a recycler view.
+     * Allows for it to be null, in case views are not yet set In this case, nothing will happen.
+     */
+    fun getRecyclerView(): RecyclerView?
+
+    /**
      * Called whenever we want to refresh recycler view.
      * In order to see changes, RecyclerView should not be null at this point
+     *
+     * @param refreshType see [DataDispatchMethod]
+     * @param waitUntilRecyclerViewLaidDown determine if we should wait until RecyclerView is laid down
+     * before refreshing data by calling [RecyclerView.post]
+     * @param delayMillis refresh with a delay, in ms
      */
     fun refreshRecyclerView(refreshType: DataDispatchMethod = DataDispatchMethod.DISPATCH_ONLY_CHANGES,
+                            waitUntilRecyclerViewLaidDown: Boolean = false,
                             delayMillis: Long? = null) {
+        // handle delay
         if (delayMillis != null) {
             Handler(Looper.getMainLooper()).postDelayed({
-                refreshRecyclerView(refreshType = refreshType, delayMillis = null)
+                refreshRecyclerView(
+                    refreshType = refreshType,
+                    waitUntilRecyclerViewLaidDown = false,
+                    delayMillis = null)
             }, delayMillis)
             return
         }
 
+        // trigger populate, either directly or wait until recycler view laid down
+        getRecyclerView()?.let {
+            if (waitUntilRecyclerViewLaidDown) {
+                it.post { setupAndPopulateRecyclerView(it, refreshType) }
+            } else {
+                setupAndPopulateRecyclerView(it, refreshType)
+            }
+        }
+    }
+
+    // determine if current recycler view has adapter set and this adapter is ProperBaseAdapter
+    private fun adapterExistsAndSet(): Boolean {
+        return getRecyclerView()?.adapter != null && getRecyclerView()?.adapter is ProperBaseAdapter
+    }
+
+    // setup adapter to recycler view and populate it
+    private fun setupAndPopulateRecyclerView(recyclerView: RecyclerView, refreshType: DataDispatchMethod) {
         try {
-            getRecyclerView()?.let {
-                // set layout manager if not set
-                if (it.layoutManager == null) {
-                    it.layoutManager = getLayoutManager()
-                }
+            // set layout manager if not set
+            if (recyclerView.layoutManager == null) {
+                recyclerView.layoutManager = getLayoutManager()
+            }
 
-                // setup data to adapter based on adapter's state
-                val adapter =
-                    if (getAdapter() != null) {
-                        it.adapter as ProperBaseAdapter
-                    } else {
-                        ProperBaseAdapter(getAdapterData())
-                    }
-                when (refreshType) {
-                    DataDispatchMethod.DISPATCH_ONLY_CHANGES -> adapter.updateItems(getAdapterData())
-                    DataDispatchMethod.SET_DATA_AND_REFRESH -> adapter.setItems(getAdapterData(), true)
-                    DataDispatchMethod.SET_DATA_ONLY -> adapter.setItems(getAdapterData(), false)
-                }
+            // setup data to adapter based on adapter's state
+            val adapter = getAdapter() ?: ProperBaseAdapter()
 
-                // set adapter to recycler view if not set
-                if (it.adapter == null) {
-                    it.adapter = adapter
+            // different behaviour based on refresh type
+            when (refreshType) {
+                DataDispatchMethod.DISPATCH_ONLY_CHANGES -> adapter.updateItems(getAdapterData())
+                DataDispatchMethod.SET_DATA_AND_REFRESH -> adapter.setItems(getAdapterData(), true)
+                DataDispatchMethod.SET_DATA_ONLY -> adapter.setItems(getAdapterData(), false)
+            }
+
+            // set adapter to recycler view if not set
+            if (recyclerView.adapter == null) {
+                recyclerView.adapter = adapter
+            }
+        }
+        catch (exception: Exception) {
+            if (BuildConfig.DEBUG) {
+                exception.message?.let {
+                    println(it)
                 }
             }
-        } catch (ignore: Exception) {
-            // views may no longer be valid, simply let it fail
         }
     }
 }
