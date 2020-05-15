@@ -1,6 +1,5 @@
 # ProperBaseAdapter
-Straightforward, fast, easy to use and adaptable generic RecyclerView adapter.\
-Never create another RecyclerView adapter again.
+Straightforward, fast, easy to use and adaptable generic RecyclerView adapter.
 
 ## How does it work?
 1. Define an AdapterItem representing an adapter item view type.
@@ -64,9 +63,10 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
   // add items to provided data list, those will be added to the adapter.
   override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
+    // let's say we want to display an image on top
     data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
         .withMargins(topMargin = resources.getDimensionPixelSize(R.dimen.dp16))
-                
+    // and add 10 text view items
     for (i in 1..10) {
         data.add(TextViewRecyclerItem("Text item $i")
             .withMargins(
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
                 Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
             }))
     }
-    
+    // and add another image on bottom
     data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now)))
 
     return data
