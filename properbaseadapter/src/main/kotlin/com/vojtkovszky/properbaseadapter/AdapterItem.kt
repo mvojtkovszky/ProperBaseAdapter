@@ -88,20 +88,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
      */
     override fun onItemViewFailedToRecycle(view: AIV) {}
 
-    // called when recycler view calls onBindViewHolder on this item.
-    internal fun bind(viewHolder: AdapterViewHolder<View>, position: Int) {
-        this.viewHolder = viewHolder as AdapterViewHolder<AIV>
-        this.boundPosition = position
-        this.viewHolder?.setCallbackListener(this)
-        onViewBound(viewHolder.itemView as AIV)
-    }
-
-    // Calculate and return view type whenever adapter asks for it.
-    // Mind that adapter caches view type ids and associates it with data to minimize recalculations.
-    internal fun getViewTypeId(): Int {
-        return getViewTypeIdForClass(this::class)
-    }
-
+    //region PUBLIC METHODS
     /**
      * @return Returns view bound to this adapter item, with correct casting.
      * Mind that this will be null if called before view is bound by adapter.
@@ -112,11 +99,48 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     }
 
     /**
+     * See [withAnimation]
+     */
+    fun setAnimation(@AnimRes animation: Int) {
+        withAnimation(animation)
+    }
+
+    /**
+     * See [withClickListener]
+     */
+    fun setClickListener(clickListener: View.OnClickListener?) {
+        withClickListener(clickListener)
+    }
+
+    /**
+     * See [withMargins]
+     */
+    fun setMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0, bottomMargin: Int = 0) {
+        withMargins(startMargin, topMargin, endMargin, bottomMargin)
+    }
+
+    /**
+     * See [withViewTag]
+     */
+    fun setViewTag(viewTag: Any?) {
+        withViewTag(viewTag)
+    }
+
+    /**
      * Define a custom animation for view of this item to be used when visibility changes.
      * If none defined, BaseAdapter will use it's own default animation for it (if defined).
      */
     fun withAnimation(@AnimRes animation: Int): AdapterItem<AIV> {
         this.animation = animation
+        return this
+    }
+
+    /**
+     * Define a generic view click listener to be set to view bound to this item.
+     * This gets useful if we just want to have a simple click listener on an item.
+     */
+    fun withClickListener(clickListener: View.OnClickListener?): AdapterItem<AIV> {
+        this.clickListener = clickListener
         return this
     }
 
@@ -133,15 +157,6 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     }
 
     /**
-     * Define a generic view click listener to be set to view bound to this item.
-     * This gets useful if we just want to have a simple click listener on an item.
-     */
-    fun withClickListener(clickListener: View.OnClickListener?): AdapterItem<AIV> {
-        this.clickListener = clickListener
-        return this
-    }
-
-    /**
      * Define a tag to be set to view bound to this item.
      * This gets useful if we want to retrieve an item from adapter by using
      * [ProperBaseAdapter.getItemByViewTag]
@@ -149,5 +164,20 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     fun withViewTag(viewTag: Any?): AdapterItem<AIV> {
         this.viewTag = viewTag
         return this
+    }
+    //endregion
+
+    // called when recycler view calls onBindViewHolder on this item.
+    internal fun bind(viewHolder: AdapterViewHolder<View>, position: Int) {
+        this.viewHolder = viewHolder as AdapterViewHolder<AIV>
+        this.boundPosition = position
+        this.viewHolder?.setCallbackListener(this)
+        onViewBound(viewHolder.itemView as AIV)
+    }
+
+    // Calculate and return view type whenever adapter asks for it.
+    // Mind that adapter caches view type ids and associates it with data to minimize recalculations.
+    internal fun getViewTypeId(): Int {
+        return getViewTypeIdForClass(this::class)
     }
 }

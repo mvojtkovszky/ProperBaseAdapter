@@ -14,14 +14,21 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        refreshRecyclerView()
+
+        // let's start
+        refreshRecyclerView(
+            refreshType = DataDispatchMethod.SET_DATA_AND_REFRESH,
+            delayMillis = 1000)
     }
 
     override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
+        // let's put an image on top
         data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
             .withMargins(
                 topMargin = resources.getDimensionPixelSize(R.dimen.dp16),
                 bottomMargin = resources.getDimensionPixelSize(R.dimen.dp16)))
+
+        // then 10 text items
         for (i in 1..10) {
             data.add(TextViewRecyclerItem("Text item $i")
                 .withMargins(
@@ -29,12 +36,15 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
                     topMargin = resources.getDimensionPixelSize(R.dimen.dp8),
                     endMargin = resources.getDimensionPixelSize(R.dimen.dp16),
                     bottomMargin = resources.getDimensionPixelSize(R.dimen.dp8))
-                //.withAnimation(android.R.anim.fade_in)
+                .withAnimation(R.anim.item_fall_down)
                 .withClickListener(View.OnClickListener {
                     Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
                 }))
         }
-        data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now)))
+
+        // and another image for the last row
+        data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now))
+            .withViewTag("BOTTOM_IMAGE"))
 
         return data
     }

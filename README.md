@@ -38,7 +38,7 @@ override fun onItemViewRecycled(view: YourView) { }
 override fun onItemViewFailedToRecycle(view: YourView) { }
 ```
 
-2. Have your Activity or Fragment implement BaseRecyclerViewImplementation .
+2. Have your Activity, Fragment or View implement BaseRecyclerViewImplementation .
 ``` kotlin
 class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
   ...
@@ -80,6 +80,22 @@ override fun onCreate(savedInstanceState: Bundle?) {
     refreshRecyclerView()
 }
 ```
+
+You're of course not required use a provided BaseRecyclerViewImplementation and simply construct ProperBaseAdapter yourself and set it to your RecyclerView.\
+You can make use of multiple adapter's public methods to fine tune your behaviour:
+``` kotlin
+fun getItemAt(position: Int): AdapterItem<*>?
+fun getItemByViewTag(viewTag: Any): AdapterItem<*>?
+fun getItemTypeAt(position: Int): KClass<*>
+fun getPositionForItemWithViewTag(viewTag: Any): Int?
+fun addItems(dataObjects: List<AdapterItem<*>>?, notifyItemRangeChanged: Boolean = true)
+fun setItems(newData: MutableList<AdapterItem<*>>, notifyDataSetChanged: Boolean = true): Unit
+fun updateItems(newItems: List<AdapterItem<*>>): Unit
+fun removeAllItems(notifyDataSetChanged: Boolean = true): Unit
+fun removeItems(fromPosition: Int, itemCount: Int = 1, notifyDataSetChanged: Boolean = true): Unit
+fun notifyItemWithViewTagChanged(viewTag: Any): Unit
+```
+
 
 ## Nice! How do I get started?
 Add it in your root build.gradle at the end of repositories:
