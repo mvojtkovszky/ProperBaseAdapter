@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
                 topMargin = resources.getDimensionPixelSize(R.dimen.dp8),
                 endMargin = resources.getDimensionPixelSize(R.dimen.dp16),
                 bottomMargin = resources.getDimensionPixelSize(R.dimen.dp8))
-            .withAnimation(android.R.anim.fade_in)
+            .withAnimation(R.anim.item_fall_down)
             .withClickListener(View.OnClickListener {
                 Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
             }))
