@@ -17,6 +17,9 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     // cache view type ids
     var viewTypeCachingEnabled = true
 
+    // allows us to properly set layout parameters in case LinearLayout is used
+    var linearLayoutManagerOrientation = RecyclerView.VERTICAL
+
     // Represents data in the adapter
     private lateinit var data: MutableList<AdapterItem<*>>
     // Represents cache of view type ids from our data.
@@ -247,7 +250,12 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             // retrieve params or create new. By default parameters take full available width
             val itemViewLayoutParams =
                 if (viewHolder.itemView.layoutParams != null) viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
-                else RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                else {
+                    val width =
+                        if (linearLayoutManagerOrientation == RecyclerView.VERTICAL) ViewGroup.LayoutParams.MATCH_PARENT
+                        else ViewGroup.LayoutParams.WRAP_CONTENT
+                    RecyclerView.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+                }
             // apply margins as defined by adapter item
             itemViewLayoutParams.setMargins(adapterItem.marginStart, adapterItem.marginTop,
                     adapterItem.marginEnd, adapterItem.marginBottom)

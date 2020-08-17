@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.vojtkovszky.properbaseadapter.*
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
         // let's start
         refreshRecyclerView(
             refreshType = DataDispatchMethod.SET_DATA_AND_REFRESH,
-            delayMillis = 1000)
+            delayMillis = 500)
     }
 
     override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
@@ -54,6 +55,12 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
     override fun getRecyclerView(): RecyclerView? {
         return findViewById(R.id.recyclerView)
+    }
+
+    override fun getNewLayoutManager(): RecyclerView.LayoutManager? {
+        return getRecyclerView()?.let {
+            LinearLayoutManager(it.context, RecyclerView.VERTICAL, false)
+        }
     }
 
     override fun fadeOutStickyHeaders(): Boolean {
