@@ -26,6 +26,8 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     internal var topMargin = 0
     internal var endMargin = 0
     internal var bottomMargin = 0
+    // header option
+    internal var isStickyHeader: Boolean = false
     // generic click listener
     internal var clickListener: View.OnClickListener? = null
     internal var viewTag: Any? = null
@@ -120,6 +122,13 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     }
 
     /**
+     * See [withStickyHeader]
+     */
+    fun setIsStickyHeader(isStickyHeader: Boolean) {
+        withStickyHeader(isStickyHeader)
+    }
+
+    /**
      * See [withViewTag]
      */
     fun setViewTag(viewTag: Any?) {
@@ -147,12 +156,57 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     /**
      * Define custom margins for this item to be applied when view gets bound.
      */
-    fun withMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0,
+    open fun withMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0,
                     bottomMargin: Int = 0): AdapterItem<AIV> {
         this.startMargin = startMargin
         this.topMargin = topMargin
         this.endMargin = endMargin
         this.bottomMargin = bottomMargin
+        return this
+    }
+
+    /**
+     * Convenience function of [withMargins] defining only one parameter which will be applied
+     * as [startMargin] and [endMargin], leaving [topMargin] and [bottomMargin] as they are
+     */
+    fun withSideMargins(sideMargins: Int): AdapterItem<AIV> {
+        return withMargins(
+            startMargin = sideMargins,
+            topMargin = this.topMargin,
+            endMargin = sideMargins,
+            bottomMargin = this.bottomMargin)
+    }
+
+    /**
+     * Convenience function of [withMargins] defining only one parameter which will be applied
+     * as [topMargin] and [bottomMargin], leaving [startMargin] and [endMargin] as they are
+     */
+    fun withTopBottomMargins(topAndBottomMargins: Int): AdapterItem<AIV> {
+        return withMargins(
+            startMargin = this.startMargin,
+            topMargin = topAndBottomMargins,
+            endMargin = this.endMargin,
+            bottomMargin = topAndBottomMargins)
+    }
+
+    /**
+     * Convenience function of [withMargins] defining only one parameter which will be applied
+     * as all margins
+     */
+    fun withAllMargins(margins: Int): AdapterItem<AIV> {
+        return withMargins(
+            startMargin = margins,
+            topMargin = margins,
+            endMargin = margins,
+            bottomMargin = margins)
+    }
+
+    /**
+     * Define whether item should be have as a sticky header item.
+     * Mind that margin parameters will be ignored if set to true
+     */
+    fun withStickyHeader(isStickyHeader: Boolean): AdapterItem<AIV> {
+        this.isStickyHeader = isStickyHeader
         return this
     }
 

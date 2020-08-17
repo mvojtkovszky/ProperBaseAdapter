@@ -1,11 +1,11 @@
-package com.vojtkovszky.properbaseadapter.example
+package com.vojtkovszky.properbaseadapter.example.items
 
 import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.vojtkovszky.properbaseadapter.AdapterItem
 
-class ImageViewRecyclerItem(private val drawable: Drawable?): AdapterItem<ImageView>() {
+class ImageViewItem(private val drawable: Drawable?): AdapterItem<ImageView>() {
 
     // here we define how view is created
     override fun getNewView(parent: ViewGroup): ImageView {

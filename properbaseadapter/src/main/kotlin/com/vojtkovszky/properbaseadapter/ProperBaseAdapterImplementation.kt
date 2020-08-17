@@ -88,7 +88,7 @@ interface ProperBaseAdapterImplementation {
                 recyclerView.layoutManager = getLayoutManager()
             }
 
-            // setup data to adapter based on adapter's state
+            // setup adapters
             val adapter = getAdapter() ?: ProperBaseAdapter()
 
             // different behaviour based on refresh type
@@ -101,6 +101,13 @@ interface ProperBaseAdapterImplementation {
             // set adapter to recycler view if not set
             if (recyclerView.adapter == null) {
                 recyclerView.adapter = adapter
+            }
+
+            // add support for sticky headers if at least one item supports it
+            if (adapter.hasStickyHeaders() && recyclerView.itemDecorationCount == 0) {
+                recyclerView.addItemDecoration(StickyHeaderItemDecoration(recyclerView, false) {
+                    adapter.getItemAt(it)?.isStickyHeader == true
+                })
             }
         }
         catch (exception: Exception) {
