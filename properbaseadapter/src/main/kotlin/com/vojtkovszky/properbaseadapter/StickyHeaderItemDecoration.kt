@@ -4,9 +4,14 @@ import android.graphics.*
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
 
+/**
+ * Created by Marcel Vojtkovszky on 2020/08/17.
+ *
+ * ItemDecoration to support sticky headers.
+ * Based on https://gist.github.com/filipkowicz/1a769001fae407b8813ab4387c42fcbd
+ */
 class StickyHeaderItemDecoration(
     parent: RecyclerView,
     private val shouldFadeOutHeader: Boolean = false,
@@ -27,6 +32,7 @@ class StickyHeaderItemDecoration(
             // clear saved layout as it may need layout update
             currentHeader = null
         }
+
         // handle click on sticky header
         parent.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
             override fun onInterceptTouchEvent(

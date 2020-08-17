@@ -249,12 +249,8 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
                 if (viewHolder.itemView.layoutParams != null) viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
                 else RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             // apply margins as defined by adapter item
-            if (adapterItem.isStickyHeader) {
-                itemViewLayoutParams.setMargins(0, 0, 0, 0)
-            } else {
-                itemViewLayoutParams.setMargins(adapterItem.startMargin, adapterItem.topMargin,
-                    adapterItem.endMargin, adapterItem.bottomMargin)
-            }
+            itemViewLayoutParams.setMargins(adapterItem.marginStart, adapterItem.marginTop,
+                    adapterItem.marginEnd, adapterItem.marginBottom)
 
             // set params if not set until now. One might set it during getNewView call in adapter view
             if (viewHolder.itemView.layoutParams == null) {

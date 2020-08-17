@@ -39,7 +39,7 @@ override fun onItemViewRecycled(view: YourView): Unit
 override fun onItemViewFailedToRecycle(view: YourView): Unit
 ```
 
-and has a few public methods to help you manage it.
+and has a few public methods to help you fine tune behaviour of each item.
 ``` kotlin
 fun getView(): YourView
 
@@ -48,6 +48,8 @@ fun setAnimation(@AnimRes animation: Int): Unit
 fun setClickListener(clickListener: View.OnClickListener?): Unit
 
 fun setMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0, bottomMargin: Int = 0): Unit
+
+fun setIsStickyHeader(isStickyHeader: Boolean)
 
 fun setViewTag(viewTag: Any?): Unit
 ```
@@ -65,15 +67,11 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
   override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
     // let's say we want to display an image on top
     data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
-        .withMargins(topMargin = resources.getDimensionPixelSize(R.dimen.dp16))
+        .withTopBottomMargins(topMargin = resources.getDimensionPixelSize(R.dimen.dp16))
     // and add 10 text view items
     for (i in 1..10) {
         data.add(TextViewRecyclerItem("Text item $i")
-            .withMargins(
-                startMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                topMargin = resources.getDimensionPixelSize(R.dimen.dp8),
-                endMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                bottomMargin = resources.getDimensionPixelSize(R.dimen.dp8))
+            .withAllMargins(resources.getDimensionPixelSize(R.dimen.dp16))
             .withAnimation(R.anim.item_fall_down)
             .withClickListener(View.OnClickListener {
                 Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
