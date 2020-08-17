@@ -185,6 +185,13 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             if (viewTag == data[position].viewTag) notifyItemChanged(position)
         }
     }
+
+    /**
+     * Determine if adapter contains at least one sticky header item
+     */
+    fun hasStickyHeaders(): Boolean {
+        return data.any { it.isStickyHeader }
+    }
     //endregion
 
     //region PARENT ADAPTER METHODS
@@ -242,8 +249,9 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
                 if (viewHolder.itemView.layoutParams != null) viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
                 else RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             // apply margins as defined by adapter item
-            itemViewLayoutParams.setMargins(adapterItem.startMargin, adapterItem.topMargin,
-                adapterItem.endMargin, adapterItem.bottomMargin)
+            itemViewLayoutParams.setMargins(adapterItem.marginStart, adapterItem.marginTop,
+                    adapterItem.marginEnd, adapterItem.marginBottom)
+
             // set params if not set until now. One might set it during getNewView call in adapter view
             if (viewHolder.itemView.layoutParams == null) {
                 viewHolder.itemView.layoutParams = itemViewLayoutParams
@@ -261,13 +269,8 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             }
 
             // play animations if item defines any or default one is set
-            if (adapterItem.animation != 0 || defaultAnimation != 0) {
-                startAnimation(
-                    viewHolder.itemView,
-                    position,
-                    if (adapterItem.animation != 0) adapterItem.animation else defaultAnimation
-                )
-            }
+            val animation = if (adapterItem.animation != 0) adapterItem.animation else defaultAnimation
+            if (animation != 0) startAnimation(viewHolder.itemView, position, animation)
         }
     }
 
@@ -286,11 +289,12 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         return 0
     }
 
-    private fun startAnimation(viewToAnimate: View, @AnimRes animationRes: Int, position: Int) {
+    private fun startAnimation(viewToAnimate: View, position: Int, @AnimRes animationRes: Int) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastAnimationPosition) {
-            val animation = AnimationUtils.loadAnimation(viewToAnimate.context, animationRes)
-            viewToAnimate.startAnimation(animation)
+            AnimationUtils.loadAnimation(viewToAnimate.context, animationRes).let {
+                viewToAnimate.startAnimation(it)
+            }
             lastAnimationPosition = position
         }
     }

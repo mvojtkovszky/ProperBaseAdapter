@@ -9,8 +9,12 @@ import java.lang.Exception
 /**
  * Created by Marcel Vojtkovszky on 2020/05/09.
  *
- * Convenient interface to use the library in the most straight forward way.
- * We can, however, choose not to use it and therefore and use ProperBaseAdapter as we please.
+ * Convenient interface to use the library in the most straight forward way by implementing it
+ * in a View, Fragment or Activity.
+ *
+ * We can, however, choose not to use it and therefore and use ProperBaseAdapter in full manual mode.
+ * In that case we have to manually construct the adapter and data, set it to RecyclerView, define
+ * LayoutManager and all that.
  */
 interface ProperBaseAdapterImplementation {
 
@@ -75,6 +79,15 @@ interface ProperBaseAdapterImplementation {
         }
     }
 
+    /**
+     * Define sticky header behaviour when one sticky header is in the process of replacing another.
+     * Defaults to [Boolean.false]. If set to [Boolean.true], it will apply a fade effect.
+     * Only applies if adapter contains sticky headers to begin with.
+     */
+    fun fadeOutStickyHeaders(): Boolean {
+        return false
+    }
+
     // determine if current recycler view has adapter set and this adapter is ProperBaseAdapter
     private fun adapterExistsAndSet(): Boolean {
         return getRecyclerView()?.adapter != null && getRecyclerView()?.adapter is ProperBaseAdapter
@@ -88,7 +101,7 @@ interface ProperBaseAdapterImplementation {
                 recyclerView.layoutManager = getLayoutManager()
             }
 
-            // setup data to adapter based on adapter's state
+            // setup adapters
             val adapter = getAdapter() ?: ProperBaseAdapter()
 
             // different behaviour based on refresh type
@@ -96,6 +109,13 @@ interface ProperBaseAdapterImplementation {
                 DataDispatchMethod.DISPATCH_ONLY_CHANGES -> adapter.updateItems(getAdapterData())
                 DataDispatchMethod.SET_DATA_AND_REFRESH -> adapter.setItems(getAdapterData(), true)
                 DataDispatchMethod.SET_DATA_ONLY -> adapter.setItems(getAdapterData(), false)
+            }
+
+            // add support for sticky headers if at least one item supports it
+            if (adapter.hasStickyHeaders() && recyclerView.itemDecorationCount == 0) {
+                recyclerView.addItemDecoration(StickyHeaderItemDecoration(recyclerView, fadeOutStickyHeaders()) {
+                    adapter.getItemAt(it)?.isStickyHeader == true
+                })
             }
 
             // set adapter to recycler view if not set

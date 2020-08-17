@@ -8,6 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 import com.vojtkovszky.properbaseadapter.*
+import com.vojtkovszky.properbaseadapter.example.items.ImageViewItem
+import com.vojtkovszky.properbaseadapter.example.items.SectionHeaderItem
+import com.vojtkovszky.properbaseadapter.example.items.TextViewItem
 
 class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
@@ -23,19 +26,19 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
     override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
         // let's put an image on top
-        data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.btn_radio))
-            .withMargins(
-                topMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                bottomMargin = resources.getDimensionPixelSize(R.dimen.dp16)))
+        data.add(ImageViewItem(ContextCompat.getDrawable(this, android.R.drawable.star_big_on))
+            .withTopBottomMargins(resources.getDimensionPixelSize(R.dimen.dp16)))
 
         // then 10 text items
-        for (i in 1..10) {
-            data.add(TextViewRecyclerItem("Text item $i")
-                .withMargins(
-                    startMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                    topMargin = resources.getDimensionPixelSize(R.dimen.dp8),
-                    endMargin = resources.getDimensionPixelSize(R.dimen.dp16),
-                    bottomMargin = resources.getDimensionPixelSize(R.dimen.dp8))
+        for (i in 1..100) {
+            // and a sticky header every 10 elements
+            if (i % 10 == 0) {
+                data.add(SectionHeaderItem("SECTION HEADER ${(i/10)}")
+                    .withStickyHeader(true))
+            }
+
+            data.add(TextViewItem("Text item $i")
+                .withAllMargins(resources.getDimensionPixelSize(R.dimen.dp16))
                 .withAnimation(R.anim.item_fall_down)
                 .withClickListener(View.OnClickListener {
                     Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
@@ -43,7 +46,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
         }
 
         // and another image for the last row
-        data.add(ImageViewRecyclerItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now))
+        data.add(ImageViewItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now))
             .withViewTag("BOTTOM_IMAGE"))
 
         return data
@@ -51,5 +54,9 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
     override fun getRecyclerView(): RecyclerView? {
         return findViewById(R.id.recyclerView)
+    }
+
+    override fun fadeOutStickyHeaders(): Boolean {
+        return true
     }
 }
