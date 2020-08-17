@@ -55,4 +55,8 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
     override fun getRecyclerView(): RecyclerView? {
         return findViewById(R.id.recyclerView)
     }
+
+    override fun fadeOutStickyHeaders(): Boolean {
+        return true
+    }
 }
