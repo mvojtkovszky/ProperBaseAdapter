@@ -264,7 +264,6 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
             if (viewHolder.itemView.layoutParams == null) {
                 viewHolder.itemView.layoutParams = itemViewLayoutParams
             }
-            adapterItem.layoutParamsInitialized = true
 
             // add generic click listener, if present
             if (adapterItem.clickListener != null) {

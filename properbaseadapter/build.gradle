@@ -1,10 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.1"
+    buildToolsVersion "30.0.2"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,7 +20,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 5
-        versionName "1.3.1-SNAPSHOT"
+        versionName "1.4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -30,11 +31,48 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
+
+// handle publishing
+project.afterEvaluate {
+    publishing {
+        publications {
+            library(MavenPublication) {
+                groupId = 'com.github.mvojtkovszky'
+                artifactId = 'BillingHelper'
+                version = android.defaultConfig.versionName
+                artifact bundleDebugAar
+                // make sure pom has all dependencies
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.api.allDependencies
+                            .findAll { dependency -> dependency.name != "unspecified" }
+                            .each { dependency ->
+                                addDependency(dependenciesNode.appendNode('dependency'), dependency, "compile")
+                            }
+                    configurations.implementation.allDependencies
+                            .findAll { dependency -> !configurations.api.allDependencies.contains(dependency) }
+                            .findAll { dependency -> dependency.name != "unspecified" }
+                            .each { dependency ->
+                                addDependency(dependenciesNode.appendNode('dependency'), dependency, "runtime")
+                            }
+                }
+            }
+        }
+    }
+}
+
+static def addDependency(dependencyNode, dependency, scope) {
+    dependencyNode.appendNode('groupId', dependency.group)
+    dependencyNode.appendNode('artifactId', dependency.name)
+    dependencyNode.appendNode('version', dependency.version)
+    dependencyNode.appendNode('scope', scope)
 }

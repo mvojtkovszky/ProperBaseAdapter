@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
         // and another image for the last row
         data.add(ImageViewItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now))
+            .withMargins(marginBottom = resources.getDimensionPixelSize(R.dimen.dp16))
             .withViewTag("BOTTOM_IMAGE"))
 
         return data

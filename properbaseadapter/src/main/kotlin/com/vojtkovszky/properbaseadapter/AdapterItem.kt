@@ -1,8 +1,10 @@
 package com.vojtkovszky.properbaseadapter
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AnimRes
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.reflect.KClass
 
@@ -19,7 +21,6 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     private var boundPosition = RecyclerView.NO_POSITION // position when bind is called
 
     @AnimRes internal var animation: Int = 0  // animation when view will get displayed
-    internal var layoutParamsInitialized = false // flag telling us if layout parameters have been applied yet
     internal var isStickyHeader: Boolean = false   // sticky header option.
     internal var clickListener: View.OnClickListener? = null  // generic click listener
     internal var viewTag: Any? = null  // allows to attach a tag to item
@@ -49,7 +50,15 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
             }
             return h
         }
-    }
+
+        /**
+         * Convenience function to return inflated view from layout.
+         * Commonly used for [getNewView] when using own custom layout
+         */
+        fun getViewFromLayout(parent: ViewGroup, @LayoutRes layoutRes: Int): View {
+            return LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
+        }
+     }
 
     /**
      * Called when underlying adapter calls
@@ -158,15 +167,15 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     /**
      * Define custom margins for this item to be applied when view gets bound.
      */
-    open fun withMargins(marginStart: Int = 0,
-                         marginTop: Int = 0,
-                         marginEnd: Int = 0,
-                         marginBottom: Int = 0
+    open fun withMargins(marginStart: Int? = null,
+                         marginTop: Int? = null,
+                         marginEnd: Int? = null,
+                         marginBottom: Int? = null
     ): AdapterItem<AIV> {
-        this.marginStart = marginStart
-        this.marginTop = marginTop
-        this.marginEnd = marginEnd
-        this.marginBottom = marginBottom
+        this.marginStart = marginStart ?: this.marginStart
+        this.marginTop = marginTop ?: this.marginTop
+        this.marginEnd = marginEnd ?: this.marginEnd
+        this.marginBottom = marginBottom ?: this.marginBottom
         return this
     }
 
