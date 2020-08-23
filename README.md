@@ -1,5 +1,5 @@
 # ProperBaseAdapter
-Straightforward, fast, easy to use and adaptable generic RecyclerView adapter.
+Straightforward, fast, easy to use and adaptable generic RecyclerView adapter. Never create another RecyclerView adapter again.
 
 ## How does it work?
 1. Define an AdapterItem representing an adapter item view type.
@@ -20,7 +20,7 @@ or inflate your own view.
 ``` kotlin
 class TextRowRecyclerItem(private val text: String): AdapterItem<View>() {
     override fun getNewView(parent: ViewGroup): View {
-        return LayoutInflater.from(parent.context).inflate(android.R.layout.activity_list_item, parent, false)
+        return getViewFromLayout(parent, android.R.layout.activity_list_item)
     }
     override fun onViewBound(view: View) {
         view.findViewById<TextView>(R.id.text1).text = text
@@ -47,7 +47,7 @@ fun setAnimation(@AnimRes animation: Int): Unit
 
 fun setClickListener(clickListener: View.OnClickListener?): Unit
 
-fun setMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0, bottomMargin: Int = 0): Unit
+fun setMargins(marginStart: Int = 0, marginTop: Int = 0, marginEnd: Int = 0, marginBottom: Int = 0): Unit
 
 fun setIsStickyHeader(isStickyHeader: Boolean)
 
@@ -119,19 +119,18 @@ fun setItems(newData: MutableList<AdapterItem<*>>, notifyDataSetChanged: Boolean
 ```
 
 ## Nice! How do I get started?
-Add it in your root build.gradle at the end of repositories:
+Make sure root build.gradle repositories include JitPack
 ``` gradle
 allprojects {
-  repositories {
-    ...
-    maven { url 'https://jitpack.io' }
-  }
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 
-And make sure this is in your app build.gradle
+And ProperBaseAdapter dependency is added to app build.gradle
 ``` gradle
 dependencies {
-  implementation "com.github.mvojtkovszky:ProperBaseAdapter:$latest_version"
+    implementation "com.github.mvojtkovszky:ProperBaseAdapter:$latest_version"
 }
 ```

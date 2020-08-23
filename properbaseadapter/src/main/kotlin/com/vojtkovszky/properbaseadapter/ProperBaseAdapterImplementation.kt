@@ -36,7 +36,7 @@ interface ProperBaseAdapterImplementation {
      * Define a layout manager.
      * Default implementation will use LinearLayoutManager
      */
-    fun getLayoutManager(): RecyclerView.LayoutManager? {
+    fun getNewLayoutManager(): RecyclerView.LayoutManager? {
         return getRecyclerView()?.let { LinearLayoutManager(it.context) }
     }
 
@@ -98,11 +98,16 @@ interface ProperBaseAdapterImplementation {
         try {
             // set layout manager if not set
             if (recyclerView.layoutManager == null) {
-                recyclerView.layoutManager = getLayoutManager()
+                recyclerView.layoutManager = getNewLayoutManager()
             }
 
             // setup adapters
-            val adapter = getAdapter() ?: ProperBaseAdapter()
+            val adapter = getAdapter() ?: ProperBaseAdapter().also {
+                // allows us to properly set default layout parameters in case LinearLayout is used
+                if (recyclerView.layoutManager is LinearLayoutManager) {
+                    it.linearLayoutManagerOrientation = (recyclerView.layoutManager as LinearLayoutManager).orientation
+                }
+            }
 
             // different behaviour based on refresh type
             when (refreshType) {
