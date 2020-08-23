@@ -1,5 +1,5 @@
 # ProperBaseAdapter
-Straightforward, fast, easy to use and adaptable generic RecyclerView adapter.
+Straightforward, fast, easy to use and adaptable generic RecyclerView adapter. Never create another RecyclerView adapter again.
 
 ## How does it work?
 1. Define an AdapterItem representing an adapter item view type.
@@ -128,7 +128,7 @@ allprojects {
 }
 ```
 
-And BillingHelper dependency is added to app build.gradle
+And ProperBaseAdapter dependency is added to app build.gradle
 ``` gradle
 dependencies {
     implementation "com.github.mvojtkovszky:ProperBaseAdapter:$latest_version"
