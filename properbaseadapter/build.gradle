@@ -19,8 +19,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 5
-        versionName "1.4.0"
+        versionCode 6
+        versionName "1.4.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,7 +47,7 @@ project.afterEvaluate {
         publications {
             library(MavenPublication) {
                 groupId = 'com.github.mvojtkovszky'
-                artifactId = 'BillingHelper'
+                artifactId = 'ProperBaseAdapter'
                 version = android.defaultConfig.versionName
                 artifact bundleDebugAar
                 // make sure pom has all dependencies
