@@ -1,5 +1,7 @@
 # ProperBaseAdapter
 Straightforward, fast, easy to use and adaptable generic RecyclerView adapter. Never create another RecyclerView adapter again.
+<br/><br/>
+<img src="example.gif" alt="Example Flow" width="300"/>
 
 ## How does it work?
 1. Define an AdapterItem representing an adapter item view type.
