@@ -10,6 +10,7 @@ import java.util.*
  * Class representing RecyclerView.ViewHolder, with added callbacks from adapter towards
  * the view holder.
  */
+@Suppress("unused")
 class AdapterViewHolder<AIV: View>(
     itemView: View,
     val viewType: Int // View type in use when this view holder got created
