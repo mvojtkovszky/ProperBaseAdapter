@@ -11,10 +11,12 @@ import kotlin.reflect.KClass
 /**
  * Created by Marcel Vojtkovszky on 2019/07/23.
  */
+@Suppress("Unused")
 class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableListOf()):
     RecyclerView.Adapter<AdapterViewHolder<View>>() {
 
     // cache view type ids
+    @SuppressWarnings("WeakerAccess")
     var viewTypeCachingEnabled = true
 
     // allows us to properly set layout parameters in case LinearLayout is used

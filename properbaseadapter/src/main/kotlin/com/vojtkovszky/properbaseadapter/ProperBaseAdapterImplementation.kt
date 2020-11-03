@@ -95,45 +95,36 @@ interface ProperBaseAdapterImplementation {
 
     // setup adapter to recycler view and populate it
     private fun setupAndPopulateRecyclerView(recyclerView: RecyclerView, refreshType: DataDispatchMethod) {
-        try {
-            // set layout manager if not set
-            if (recyclerView.layoutManager == null) {
-                recyclerView.layoutManager = getNewLayoutManager()
-            }
+        // set layout manager if not set
+        if (recyclerView.layoutManager == null) {
+            recyclerView.layoutManager = getNewLayoutManager()
+        }
 
-            // setup adapters
-            val adapter = getAdapter() ?: ProperBaseAdapter().also {
-                // allows us to properly set default layout parameters in case LinearLayout is used
-                if (recyclerView.layoutManager is LinearLayoutManager) {
-                    it.linearLayoutManagerOrientation = (recyclerView.layoutManager as LinearLayoutManager).orientation
-                }
-            }
-
-            // different behaviour based on refresh type
-            when (refreshType) {
-                DataDispatchMethod.DISPATCH_ONLY_CHANGES -> adapter.updateItems(getAdapterData())
-                DataDispatchMethod.SET_DATA_AND_REFRESH -> adapter.setItems(getAdapterData(), true)
-                DataDispatchMethod.SET_DATA_ONLY -> adapter.setItems(getAdapterData(), false)
-            }
-
-            // add support for sticky headers if at least one item supports it
-            if (adapter.hasStickyHeaders() && recyclerView.itemDecorationCount == 0) {
-                recyclerView.addItemDecoration(StickyHeaderItemDecoration(recyclerView, fadeOutStickyHeaders()) {
-                    adapter.getItemAt(it)?.isStickyHeader == true
-                })
-            }
-
-            // set adapter to recycler view if not set
-            if (recyclerView.adapter == null) {
-                recyclerView.adapter = adapter
+        // setup adapters
+        val adapter = getAdapter() ?: ProperBaseAdapter().also {
+            // allows us to properly set default layout parameters in case LinearLayout is used
+            if (recyclerView.layoutManager is LinearLayoutManager) {
+                it.linearLayoutManagerOrientation = (recyclerView.layoutManager as LinearLayoutManager).orientation
             }
         }
-        catch (exception: Exception) {
-            if (BuildConfig.DEBUG) {
-                exception.message?.let {
-                    println(it)
-                }
-            }
+
+        // different behaviour based on refresh type
+        when (refreshType) {
+            DataDispatchMethod.DISPATCH_ONLY_CHANGES -> adapter.updateItems(getAdapterData())
+            DataDispatchMethod.SET_DATA_AND_REFRESH -> adapter.setItems(getAdapterData(), true)
+            DataDispatchMethod.SET_DATA_ONLY -> adapter.setItems(getAdapterData(), false)
+        }
+
+        // add support for sticky headers if at least one item supports it
+        if (adapter.hasStickyHeaders() && recyclerView.itemDecorationCount == 0) {
+            recyclerView.addItemDecoration(StickyHeaderItemDecoration(recyclerView, fadeOutStickyHeaders()) {
+                adapter.getItemAt(it)?.isStickyHeader == true
+            })
+        }
+
+        // set adapter to recycler view if not set
+        if (recyclerView.adapter == null) {
+            recyclerView.adapter = adapter
         }
     }
 }
