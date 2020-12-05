@@ -4,7 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.Exception
 
 /**
  * Created by Marcel Vojtkovszky on 2020/05/09.

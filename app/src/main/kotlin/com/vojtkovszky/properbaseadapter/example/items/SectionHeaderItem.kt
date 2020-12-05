@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.vojtkovszky.properbaseadapter.AdapterItem
 import com.vojtkovszky.properbaseadapter.example.R
-import kotlinx.android.synthetic.main.section_header_view.view.*
+import com.vojtkovszky.properbaseadapter.example.databinding.SectionHeaderViewBinding
 
 class SectionHeaderItem(private val text: String): AdapterItem<View>() {
 
@@ -13,6 +13,8 @@ class SectionHeaderItem(private val text: String): AdapterItem<View>() {
     }
 
     override fun onViewBound(view: View) {
-        view.textView.text = text
+        SectionHeaderViewBinding.bind(view).apply {
+            textView.text = text
+        }
     }
 }
