@@ -22,28 +22,28 @@ class AdapterViewHolder<AIV: View>(
     val id: String = UUID.randomUUID().toString()
     private var callbackListener: OnCallbackListener<AIV>? = null
 
-    fun setCallbackListener(callbackListener: OnCallbackListener<AIV>) {
+    internal fun setCallbackListener(callbackListener: OnCallbackListener<AIV>) {
         this.callbackListener = callbackListener
     }
 
     fun onItemViewAttached() {
         @Suppress("UNCHECKED_CAST")
-        callbackListener?.onItemViewAttached(itemView as AIV)
+        callbackListener?.onItemViewAttached(super.itemView as AIV)
     }
 
     fun onItemViewDetached() {
         @Suppress("UNCHECKED_CAST")
-        callbackListener?.onItemViewDetached(itemView as AIV)
+        callbackListener?.onItemViewDetached(super.itemView as AIV)
     }
 
     fun onItemViewRecycled() {
         @Suppress("UNCHECKED_CAST")
-        callbackListener?.onItemViewRecycled(itemView as AIV)
+        callbackListener?.onItemViewRecycled(super.itemView as AIV)
     }
 
     fun onItemViewFailedToRecycle() {
         @Suppress("UNCHECKED_CAST")
-        callbackListener?.onItemViewFailedToRecycle(itemView as AIV)
+        callbackListener?.onItemViewFailedToRecycle(super.itemView as AIV)
     }
 
     interface OnCallbackListener<in AIV: View> {
