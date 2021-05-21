@@ -45,9 +45,9 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
             data.add(TextViewItem("Text item $i")
                     .withAllMargins(resources.getDimensionPixelSize(R.dimen.dp16))
                     .withAnimation(R.anim.item_fall_down)
-                    .withClickListener(View.OnClickListener {
+                    .withClickListener {
                         Toast.makeText(this, "Clicked item $i", Toast.LENGTH_SHORT).show()
-                    }))
+                    })
         }
 
         // and another image for the last row

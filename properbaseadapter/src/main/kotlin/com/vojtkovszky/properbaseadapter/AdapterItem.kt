@@ -5,13 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AnimRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.reflect.KClass
 
 /**
  * Created by Marcel Vojtkovszky on 2019/07/23.
  *
- * Represents an item for an adapter.
+ * Represents an item in adapter.
  * It contains both a view holder and logic to populate or manipulate the view.
  */
 @Suppress("UNCHECKED_CAST")
@@ -20,18 +21,23 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     private var viewHolder: AdapterViewHolder<AIV>? = null
     private var boundPosition = RecyclerView.NO_POSITION // position when bind is called
 
-    @AnimRes internal var animation: Int = 0  // animation when view will get displayed
+    @AnimRes
+    internal var animation: Int = 0  // animation when view will get displayed
     internal var isStickyHeader: Boolean = false   // sticky header option.
     internal var clickListener: View.OnClickListener? = null  // generic click listener
     internal var viewTag: Any? = null  // allows to attach a tag to item
     // allow margins to be set additionally. Note that margins are not compatible with
     // isStickyHeader property and will always be 0 if isStickyHeader is set to true
+    @Px
     internal var marginStart = 0
     get() = if (isStickyHeader) 0 else field
+    @Px
     internal var marginTop = 0
     get() = if (isStickyHeader) 0 else field
+    @Px
     internal var marginEnd = 0
     get() = if (isStickyHeader) 0 else field
+    @Px
     internal var marginBottom = 0
     get() = if (isStickyHeader) 0 else field
 
@@ -128,7 +134,10 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     /**
      * See [withMargins]
      */
-    fun setMargins(startMargin: Int = 0, topMargin: Int = 0, endMargin: Int = 0, bottomMargin: Int = 0) {
+    fun setMargins(@Px startMargin: Int = 0,
+                   @Px topMargin: Int = 0,
+                   @Px endMargin: Int = 0,
+                   @Px bottomMargin: Int = 0) {
         withMargins(startMargin, topMargin, endMargin, bottomMargin)
     }
 
@@ -167,10 +176,10 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     /**
      * Define custom margins for this item to be applied when view gets bound.
      */
-    open fun withMargins(marginStart: Int? = null,
-                         marginTop: Int? = null,
-                         marginEnd: Int? = null,
-                         marginBottom: Int? = null
+    open fun withMargins(@Px marginStart: Int? = null,
+                         @Px marginTop: Int? = null,
+                         @Px marginEnd: Int? = null,
+                         @Px marginBottom: Int? = null
     ): AdapterItem<AIV> {
         this.marginStart = marginStart ?: this.marginStart
         this.marginTop = marginTop ?: this.marginTop
@@ -183,7 +192,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
      * Convenience function of [withMargins] defining only one parameter which will be applied
      * as [marginStart] and [marginEnd], leaving [marginTop] and [marginBottom] as they are
      */
-    fun withSideMargins(sideMargins: Int): AdapterItem<AIV> {
+    fun withSideMargins(@Px sideMargins: Int): AdapterItem<AIV> {
         return withMargins(
             marginStart = sideMargins,
             marginTop = this.marginTop,
@@ -195,7 +204,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
      * Convenience function of [withMargins] defining only one parameter which will be applied
      * as [marginTop] and [marginBottom], leaving [marginStart] and [marginEnd] as they are
      */
-    fun withTopBottomMargins(topAndBottomMargins: Int): AdapterItem<AIV> {
+    fun withTopBottomMargins(@Px topAndBottomMargins: Int): AdapterItem<AIV> {
         return withMargins(
             marginStart = this.marginStart,
             marginTop = topAndBottomMargins,
@@ -205,9 +214,9 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
 
     /**
      * Convenience function of [withMargins] defining only one parameter which will be applied
-     * as all margins
+     * to all margins
      */
-    fun withAllMargins(margins: Int): AdapterItem<AIV> {
+    fun withAllMargins(@Px margins: Int): AdapterItem<AIV> {
         return withMargins(
             marginStart = margins,
             marginTop = margins,

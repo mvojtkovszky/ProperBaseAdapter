@@ -26,28 +26,48 @@ interface ProperBaseAdapterImplementation {
 
     /**
      * Define list of Adapter Items.
-     * Supplied argument is a conveniently typed empty list which we add items to and return
-     * it as a result in the end.
+     * Supplied argument is a conveniently typed empty list which we add items to and return as a
+     * result in the end.
+     *
+     * Data will picked up right after [refreshRecyclerView] gets called.
      */
     fun getAdapterData(data: MutableList<AdapterItem<*>> = mutableListOf()): MutableList<AdapterItem<*>>
 
     /**
      * Define a layout manager.
-     * Default implementation will use LinearLayoutManager
+     * Default implementation will use [LinearLayoutManager]
      */
     fun getNewLayoutManager(): RecyclerView.LayoutManager? {
         return getRecyclerView()?.let { LinearLayoutManager(it.context) }
     }
 
     /**
-     * Define a recycler view.
-     * Allows for it to be null, in case views are not yet set In this case, nothing will happen.
+     * Define a reference to [RecyclerView] in your view.
+     * Allows it to be null (common in case views are not yet set) - in this case nothing will happen
+     * as null RecyclerView cannot be refreshed, thus calling [refreshRecyclerView] will do nothing.
      */
     fun getRecyclerView(): RecyclerView?
 
     /**
-     * Called whenever we want to refresh recycler view.
-     * In order to see changes, RecyclerView should not be null at this point
+     * Optionally override this method and provide result based on the lifecycle status.
+     *
+     * Every time RecyclerView is about to be populated, we decide whether we're allowed to continue
+     * based on this method.
+     *
+     * This allows to omit repetitive code similar to
+     * 'if (!activity.isDestroyed && !activity.isFinishing) refreshRecyclerView()'
+     * to cover edge cases where [refreshRecyclerView] might be called while lifecycle within the
+     * used context is in state of becoming invalid, potentially causing a crash.
+     * Example where this might happen is when using a lot of delays or triggering data refresh
+     * from an event originating in a background thread.
+     *
+     * By default it will always be true (considered valid).
+     */
+    fun isLifecycleValid(): Boolean = true
+
+    /**
+     * Trigger recycler view refresh with data provided in [getAdapterData].
+     * In order to see changes, RecyclerView should not be null at this point.
      *
      * @param refreshType see [DataDispatchMethod]
      * @param waitUntilRecyclerViewLaidDown determine if we should wait until RecyclerView is laid down
@@ -57,6 +77,11 @@ interface ProperBaseAdapterImplementation {
     fun refreshRecyclerView(refreshType: DataDispatchMethod = DataDispatchMethod.DISPATCH_ONLY_CHANGES,
                             waitUntilRecyclerViewLaidDown: Boolean = false,
                             delayMillis: Long? = null) {
+        // check if explicitly reported out of lifecycle
+        if (!isLifecycleValid()) {
+            return
+        }
+
         // handle delay
         if (delayMillis != null) {
             Handler(Looper.getMainLooper()).postDelayed({
@@ -81,7 +106,7 @@ interface ProperBaseAdapterImplementation {
     /**
      * Define sticky header behaviour when one sticky header is in the process of replacing another.
      * Defaults to [Boolean.false]. If set to [Boolean.true], it will apply a fade effect.
-     * Only applies if adapter contains sticky headers to begin with.
+     * Only applies if adapter contains at least one item marked as sticky header to begin with.
      */
     fun fadeOutStickyHeaders(): Boolean {
         return false
@@ -94,6 +119,11 @@ interface ProperBaseAdapterImplementation {
 
     // setup adapter to recycler view and populate it
     private fun setupAndPopulateRecyclerView(recyclerView: RecyclerView, refreshType: DataDispatchMethod) {
+        // check if explicitly reported out of lifecycle
+        if (!isLifecycleValid()) {
+            return
+        }
+
         // set layout manager if not set
         if (recyclerView.layoutManager == null) {
             recyclerView.layoutManager = getNewLayoutManager()
