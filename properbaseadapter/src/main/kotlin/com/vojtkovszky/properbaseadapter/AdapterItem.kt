@@ -214,7 +214,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
 
     /**
      * Convenience function of [withMargins] defining only one parameter which will be applied
-     * as all margins
+     * to all margins
      */
     fun withAllMargins(@Px margins: Int): AdapterItem<AIV> {
         return withMargins(
