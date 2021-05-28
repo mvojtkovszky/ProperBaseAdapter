@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
                 delayMillis = 500)
     }
 
-    override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
+    override fun getAdapterData(adapter: ProperBaseAdapter, data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
         // let's put an image on top
         data.add(ImageViewItem(ContextCompat.getDrawable(this, android.R.drawable.star_big_on))
                 .withTopBottomMargins(resources.getDimensionPixelSize(R.dimen.dp16)))

@@ -33,26 +33,18 @@ class TextRowRecyclerItem(private val text: String): AdapterItem<View>() {
 AdapterItem subscribes to callbacks you can override to fine-tune behaviour in different states.
 ``` kotlin
 override fun onItemViewAttached(view: YourView): Unit
-
 override fun onItemViewDetached(view: YourView): Unit
-
 override fun onItemViewRecycled(view: YourView): Unit
-
 override fun onItemViewFailedToRecycle(view: YourView): Unit
 ```
 
 and has a few public methods to help you fine tune behaviour of each item.
 ``` kotlin
 fun getView(): YourView
-
 fun setAnimation(@AnimRes animation: Int): Unit
-
 fun setClickListener(clickListener: View.OnClickListener?): Unit
-
 fun setMargins(marginStart: Int = 0, marginTop: Int = 0, marginEnd: Int = 0, marginBottom: Int = 0): Unit
-
 fun setIsStickyHeader(isStickyHeader: Boolean)
-
 fun setViewTag(viewTag: Any?): Unit
 ```
 
@@ -100,24 +92,17 @@ override fun onCreate(savedInstanceState: Bundle?) {
 <br/>Make use of multiple adapter's public methods based on your needs:
 ``` kotlin
 fun addItems(dataObjects: List<AdapterItem<*>>?, notifyItemRangeChanged: Boolean = true): Unit
-
 fun getItemAt(position: Int): AdapterItem<*>?
-
 fun getItemByViewTag(viewTag: Any): AdapterItem<*>?
-
 fun getItemTypeAt(position: Int): KClass<*>
-
 fun getPositionForItemWithViewTag(viewTag: Any): Int?
-
 fun notifyItemWithViewTagChanged(viewTag: Any): Unit
-
 fun updateItems(newItems: List<AdapterItem<*>>): Unit
-
 fun removeAllItems(notifyDataSetChanged: Boolean = true): Unit
-
 fun removeItems(fromPosition: Int, itemCount: Int = 1, notifyDataSetChanged: Boolean = true): Unit
-
 fun setItems(newData: MutableList<AdapterItem<*>>, notifyDataSetChanged: Boolean = true): Unit
+fun hasStickyHeaders(): Boolean
+fun setDefaultItemMargins(start: Int = 0, top: Int = 0, end: Int = 0, bottom: Int = 0): Unit
 ```
 
 ## Nice! How do I get started?

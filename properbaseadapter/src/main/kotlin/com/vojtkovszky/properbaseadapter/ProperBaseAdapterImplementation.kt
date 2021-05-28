@@ -18,20 +18,26 @@ import androidx.recyclerview.widget.RecyclerView
 interface ProperBaseAdapterImplementation {
 
     /**
-     * Retrieve an adapter. Will only exist if RecyclerView is set-up and populated.
+     * Retrieve an adapter. Will only exist once RecyclerView is set-up and populated, which
+     * happens after [refreshRecyclerView] is called
      */
     fun getAdapter(): ProperBaseAdapter? {
         return if (adapterExistsAndSet()) getRecyclerView()?.adapter as ProperBaseAdapter else null
     }
 
     /**
-     * Define list of Adapter Items.
-     * Supplied argument is a conveniently typed empty list which we add items to and return as a
-     * result in the end.
+     * Provide list of Adapter Items. Will invoke after [refreshRecyclerView] gets called.
+     * Also an opportunity to tweak adapter itself before data in it gets refreshed.
      *
-     * Data will picked up right after [refreshRecyclerView] gets called.
+     * @param adapter instance of [ProperBaseAdapter] before changes are applied to it. Gives us a
+     * chance to change its behaviour before changes are visible on [RecyclerView] itself.
+     * @param data convenience parameter - empty mutable list of adapter items to which adapter
+     * items can be added and returned.
+     * @return list of adapter items. Can be [data]
      */
-    fun getAdapterData(data: MutableList<AdapterItem<*>> = mutableListOf()): MutableList<AdapterItem<*>>
+    fun getAdapterData(adapter: ProperBaseAdapter,
+                       data: MutableList<AdapterItem<*>> = mutableListOf()
+    ): MutableList<AdapterItem<*>>
 
     /**
      * Define a layout manager.
@@ -139,9 +145,9 @@ interface ProperBaseAdapterImplementation {
 
         // different behaviour based on refresh type
         when (refreshType) {
-            DataDispatchMethod.DISPATCH_ONLY_CHANGES -> adapter.updateItems(getAdapterData())
-            DataDispatchMethod.SET_DATA_AND_REFRESH -> adapter.setItems(getAdapterData(), true)
-            DataDispatchMethod.SET_DATA_ONLY -> adapter.setItems(getAdapterData(), false)
+            DataDispatchMethod.DISPATCH_ONLY_CHANGES -> adapter.updateItems(getAdapterData(adapter))
+            DataDispatchMethod.SET_DATA_AND_REFRESH -> adapter.setItems(getAdapterData(adapter), true)
+            DataDispatchMethod.SET_DATA_ONLY -> adapter.setItems(getAdapterData(adapter), false)
         }
 
         // add support for sticky headers if at least one item supports it
