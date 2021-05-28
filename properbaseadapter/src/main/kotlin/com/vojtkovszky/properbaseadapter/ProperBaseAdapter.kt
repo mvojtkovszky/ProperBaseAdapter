@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
+import androidx.annotation.Px
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.reflect.KClass
@@ -15,18 +16,27 @@ import kotlin.reflect.KClass
 class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableListOf()):
     RecyclerView.Adapter<AdapterViewHolder<View>>() {
 
-    // cache view type ids
+    /**
+     * To differentiate different types of data in the adapter, we calculate the view type for
+     * each added item when adapter asks for it by invoking [getItemViewType]
+     * We calculate the type by calculating hash from the qualified name of the class.
+     * If this value is true, calculations of view types will be cached, so next time
+     * [getItemViewType] is required from the item, it is retrieved from cache rather than calculated
+     * again.
+     */
     @SuppressWarnings("WeakerAccess")
     var viewTypeCachingEnabled = true
 
-    // allows us to properly set layout parameters in case LinearLayout is used
+    /**
+     * Allows us to properly set layout parameters in case LinearLayout is used, as item uses
+     * with to match parent by default when it's layout parameters are built.
+     * This isn't so useful if layout manager uses horizontal orientation, so make sure to tell
+     * adapter about it.
+     */
     var linearLayoutManagerOrientation = RecyclerView.VERTICAL
 
     // Represents data in the adapter
     private lateinit var data: MutableList<AdapterItem<*>>
-    // Represents cache of view type ids from our data.
-    // That's because we calculate view type ids by calculating hash from type name and since retrieving type id is a
-    // common operation, we ask for it only once for each instance of data.
     // dataViewTypeIds is always of same size as data
     private var dataViewTypeIds: IntArray = IntArray(0)
 
@@ -34,6 +44,12 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     // default animation to be applied to items in this recycler view, unless item has own animation specified
     @AnimRes var defaultAnimation: Int = 0
     private var lastAnimationPosition: Int = 0
+
+    // default margins
+    @Px private var defaultMarginStart: Int = 0
+    @Px private var defaultMarginTop: Int = 0
+    @Px private var defaultMarginEnd: Int = 0
+    @Px private var defaultMarginBottom: Int = 0
 
     init {
         setItems(newData = data, notifyDataSetChanged = false)
@@ -197,6 +213,18 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     fun hasStickyHeaders(): Boolean {
         return data.any { it.isStickyHeader }
     }
+
+    /**
+     * Margin to be used on a view when bound, if an item doesn't have defined margin of its own.
+     * This is useful if all of the items for example have same side margins, so you don't have
+     * to define same margin to each item in an adapter.
+     */
+    fun setDefaultItemMargins(@Px start: Int = 0, @Px top: Int = 0, @Px end: Int = 0, @Px bottom: Int = 0) {
+        this.defaultMarginStart = start
+        this.defaultMarginTop = top
+        this.defaultMarginEnd = end
+        this.defaultMarginBottom = bottom
+    }
     //endregion
 
     //region PARENT ADAPTER METHODS
@@ -258,9 +286,13 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
                         else ViewGroup.LayoutParams.WRAP_CONTENT
                     RecyclerView.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT)
                 }
-            // apply margins as defined by adapter item
-            itemViewLayoutParams.setMargins(adapterItem.marginStart, adapterItem.marginTop,
-                    adapterItem.marginEnd, adapterItem.marginBottom)
+            // apply margins as defined by adapter item, or global default
+            itemViewLayoutParams.setMargins(
+                if (adapterItem.marginStart == 0) adapterItem.marginStart else defaultMarginStart,
+                if (adapterItem.marginTop == 0) adapterItem.marginTop else defaultMarginTop,
+                if (adapterItem.marginEnd == 0) adapterItem.marginEnd else defaultMarginEnd,
+                if (adapterItem.marginBottom == 0) adapterItem.marginBottom else defaultMarginBottom
+            )
 
             // set params if not set until now. One might set it during getNewView call in adapter view
             if (viewHolder.itemView.layoutParams == null) {
