@@ -30,16 +30,16 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     // isStickyHeader property and will always be 0 if isStickyHeader is set to true
     @Px
     internal var marginStart = 0
-    get() = if (isStickyHeader) 0 else field
+        get() = if (isStickyHeader) 0 else field
     @Px
     internal var marginTop = 0
-    get() = if (isStickyHeader) 0 else field
+        get() = if (isStickyHeader) 0 else field
     @Px
     internal var marginEnd = 0
-    get() = if (isStickyHeader) 0 else field
+        get() = if (isStickyHeader) 0 else field
     @Px
     internal var marginBottom = 0
-    get() = if (isStickyHeader) 0 else field
+        get() = if (isStickyHeader) 0 else field
 
     companion object {
         /**
@@ -49,9 +49,9 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
          */
         fun getViewTypeIdForClass(clazz: KClass<*>): Int {
             var h = 0
-            clazz.simpleName?.let {
+            clazz.qualifiedName?.let {
                 for (element in it) {
-                    h = 31 * h + element.toInt()
+                    h = 31 * h + element.code
                 }
             }
             return h
