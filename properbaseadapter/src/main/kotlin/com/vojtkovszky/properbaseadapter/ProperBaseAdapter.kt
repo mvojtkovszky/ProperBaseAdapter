@@ -288,10 +288,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
                 }
             // apply margins as defined by adapter item, or global default
             itemViewLayoutParams.setMargins(
-                if (adapterItem.marginStart == 0) adapterItem.marginStart else defaultMarginStart,
-                if (adapterItem.marginTop == 0) adapterItem.marginTop else defaultMarginTop,
-                if (adapterItem.marginEnd == 0) adapterItem.marginEnd else defaultMarginEnd,
-                if (adapterItem.marginBottom == 0) adapterItem.marginBottom else defaultMarginBottom
+                if (adapterItem.marginStart != 0) adapterItem.marginStart else defaultMarginStart,
+                if (adapterItem.marginTop != 0) adapterItem.marginTop else defaultMarginTop,
+                if (adapterItem.marginEnd != 0) adapterItem.marginEnd else defaultMarginEnd,
+                if (adapterItem.marginBottom != 0) adapterItem.marginBottom else defaultMarginBottom
             )
 
             // set params if not set until now. One might set it during getNewView call in adapter view
