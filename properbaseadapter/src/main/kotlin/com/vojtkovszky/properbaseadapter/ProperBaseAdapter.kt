@@ -219,11 +219,19 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * This is useful if all of the items for example have same side margins, so you don't have
      * to define same margin to each item in an adapter.
      */
+    @SuppressWarnings("WeakerAccess")
     fun setDefaultItemMargins(@Px start: Int = 0, @Px top: Int = 0, @Px end: Int = 0, @Px bottom: Int = 0) {
         this.defaultMarginStart = start
         this.defaultMarginTop = top
         this.defaultMarginEnd = end
         this.defaultMarginBottom = bottom
+    }
+
+    /**
+     * [setDefaultItemMargins] only setting start and end as [startAndEnd]
+     */
+    fun setDefaultItemSideMargins(@Px startAndEnd: Int) {
+        setDefaultItemMargins(start = startAndEnd, end = startAndEnd)
     }
     //endregion
 

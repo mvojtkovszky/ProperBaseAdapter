@@ -134,11 +134,8 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     /**
      * See [withMargins]
      */
-    fun setMargins(@Px startMargin: Int = 0,
-                   @Px topMargin: Int = 0,
-                   @Px endMargin: Int = 0,
-                   @Px bottomMargin: Int = 0) {
-        withMargins(startMargin, topMargin, endMargin, bottomMargin)
+    fun setMargins(@Px start: Int = 0, @Px top: Int = 0, @Px end: Int = 0, @Px bottom: Int = 0) {
+        withMargins(start, top, end, bottom)
     }
 
     /**
@@ -176,15 +173,15 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
     /**
      * Define custom margins for this item to be applied when view gets bound.
      */
-    open fun withMargins(@Px marginStart: Int? = null,
-                         @Px marginTop: Int? = null,
-                         @Px marginEnd: Int? = null,
-                         @Px marginBottom: Int? = null
+    open fun withMargins(@Px start: Int? = null,
+                         @Px top: Int? = null,
+                         @Px end: Int? = null,
+                         @Px bottom: Int? = null
     ): AdapterItem<AIV> {
-        this.marginStart = marginStart ?: this.marginStart
-        this.marginTop = marginTop ?: this.marginTop
-        this.marginEnd = marginEnd ?: this.marginEnd
-        this.marginBottom = marginBottom ?: this.marginBottom
+        this.marginStart = start ?: this.marginStart
+        this.marginTop = top ?: this.marginTop
+        this.marginEnd = end ?: this.marginEnd
+        this.marginBottom = bottom ?: this.marginBottom
         return this
     }
 
@@ -192,36 +189,36 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
      * Convenience function of [withMargins] defining only one parameter which will be applied
      * as [marginStart] and [marginEnd], leaving [marginTop] and [marginBottom] as they are
      */
-    fun withSideMargins(@Px sideMargins: Int): AdapterItem<AIV> {
+    fun withSideMargins(@Px startAndEnd: Int): AdapterItem<AIV> {
         return withMargins(
-            marginStart = sideMargins,
-            marginTop = this.marginTop,
-            marginEnd = sideMargins,
-            marginBottom = this.marginBottom)
+            start = startAndEnd,
+            top = this.marginTop,
+            end = startAndEnd,
+            bottom = this.marginBottom)
     }
 
     /**
      * Convenience function of [withMargins] defining only one parameter which will be applied
      * as [marginTop] and [marginBottom], leaving [marginStart] and [marginEnd] as they are
      */
-    fun withTopBottomMargins(@Px topAndBottomMargins: Int): AdapterItem<AIV> {
+    fun withTopBottomMargins(@Px topAndBottom: Int): AdapterItem<AIV> {
         return withMargins(
-            marginStart = this.marginStart,
-            marginTop = topAndBottomMargins,
-            marginEnd = this.marginEnd,
-            marginBottom = topAndBottomMargins)
+            start = this.marginStart,
+            top = topAndBottom,
+            end = this.marginEnd,
+            bottom = topAndBottom)
     }
 
     /**
      * Convenience function of [withMargins] defining only one parameter which will be applied
      * to all margins
      */
-    fun withAllMargins(@Px margins: Int): AdapterItem<AIV> {
+    fun withAllMargins(@Px all: Int): AdapterItem<AIV> {
         return withMargins(
-            marginStart = margins,
-            marginTop = margins,
-            marginEnd = margins,
-            marginBottom = margins)
+            start = all,
+            top = all,
+            end = all,
+            bottom = all)
     }
 
     /**
