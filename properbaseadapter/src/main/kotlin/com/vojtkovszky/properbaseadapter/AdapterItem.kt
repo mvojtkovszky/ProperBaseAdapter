@@ -190,11 +190,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
      * as [marginStart] and [marginEnd], leaving [marginTop] and [marginBottom] as they are
      */
     fun withSideMargins(@Px startAndEnd: Int): AdapterItem<AIV> {
-        return withMargins(
-            start = startAndEnd,
-            top = this.marginTop,
-            end = startAndEnd,
-            bottom = this.marginBottom)
+        return withMargins(start = startAndEnd, top = this.marginTop, end = startAndEnd, bottom = this.marginBottom)
     }
 
     /**
@@ -202,11 +198,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
      * as [marginTop] and [marginBottom], leaving [marginStart] and [marginEnd] as they are
      */
     fun withTopBottomMargins(@Px topAndBottom: Int): AdapterItem<AIV> {
-        return withMargins(
-            start = this.marginStart,
-            top = topAndBottom,
-            end = this.marginEnd,
-            bottom = topAndBottom)
+        return withMargins(start = this.marginStart, top = topAndBottom, end = this.marginEnd, bottom = topAndBottom)
     }
 
     /**
@@ -214,11 +206,7 @@ abstract class AdapterItem<AIV: View> : AdapterViewHolder.OnCallbackListener<AIV
      * to all margins
      */
     fun withAllMargins(@Px all: Int): AdapterItem<AIV> {
-        return withMargins(
-            start = all,
-            top = all,
-            end = all,
-            bottom = all)
+        return withMargins(start = all, top = all, end = all, bottom = all)
     }
 
     /**
