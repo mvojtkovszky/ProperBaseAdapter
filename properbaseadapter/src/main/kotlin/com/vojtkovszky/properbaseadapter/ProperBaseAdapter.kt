@@ -7,6 +7,7 @@ import androidx.annotation.AnimRes
 import androidx.annotation.Px
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.min
 import kotlin.reflect.KClass
 
 /**
@@ -36,9 +37,9 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     var linearLayoutManagerOrientation = RecyclerView.VERTICAL
 
     // Represents data in the adapter
-    private lateinit var data: MutableList<AdapterItem<*>>
+    private val data = mutableListOf<AdapterItem<*>>()
     // dataViewTypeIds is always of same size as data
-    private var dataViewTypeIds: IntArray = IntArray(0)
+    private val dataViewTypeIds = mutableListOf<Int>()
 
     // animation related thingies.
     // default animation to be applied to items in this recycler view, unless item has own animation specified
@@ -52,7 +53,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
     @Px private var defaultMarginBottom: Int = 0
 
     init {
-        setItems(newData = data, notifyDataSetChanged = false)
+        setItems(data = data, notifyDataSetChanged = false)
     }
 
     companion object {
@@ -104,25 +105,29 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         return null
     }
 
-
     /**
-     * Add new items at the end of existing data set and define whether
-     * [RecyclerView.Adapter.notifyDataSetChanged] should be called afterwards.
-     *
-     * TODO: Insert should be possible too, just need to look into modifying
-     * [addDefaultToDataViewTypeIds] method
+     * Add new items to the existing dataset.
+     * @param dataObjects items to be added
+     * @param index position in the existing list where [dataObjects] will be inserted into.
+     * Defaults to end of list if not defined or if index greater or if > data.lastIndex
+     * @param notifyItemRangeChanged defines whether [RecyclerView.Adapter.notifyDataSetChanged]
+     * should be called afterwards.
      */
-    fun addItems(dataObjects: List<AdapterItem<*>>?, notifyItemRangeChanged: Boolean = true) {
-        if (dataObjects == null || dataObjects.isEmpty()) {
+    fun addItems(dataObjects: List<AdapterItem<*>>,
+                 index: Int = data.size,
+                 notifyItemRangeChanged: Boolean = true) {
+        if (dataObjects.isEmpty()) {
             return
         }
 
-        val addStartPosition = if (data.isEmpty()) 0 else data.size
-        data.addAll(dataObjects)
-        addDefaultToDataViewTypeIds(addStartPosition)
+        // make sure provided position is in range
+        val fromPosition = min(data.size, index)
+
+        data.addAll(fromPosition, dataObjects)
+        dataViewTypeIds.addAll(fromPosition, MutableList(dataObjects.size) { VIEW_TYPE_ID_UNSET })
 
         if (notifyItemRangeChanged) {
-            notifyItemRangeChanged(addStartPosition, dataObjects.size)
+            notifyItemRangeChanged(fromPosition, dataObjects.size)
         }
     }
 
@@ -130,10 +135,8 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * Set items to the the adapter and define whether [RecyclerView.Adapter.notifyDataSetChanged]
      * should be called afterwards.
      */
-    fun setItems(newData: MutableList<AdapterItem<*>>, notifyDataSetChanged: Boolean = true) {
-        data = newData
-
-        resetDataViewTypeIds()
+    fun setItems(data: List<AdapterItem<*>>, notifyDataSetChanged: Boolean = true) {
+        resetData(data)
         resetLastAnimationPosition()
 
         if (notifyDataSetChanged) {
@@ -145,13 +148,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * Replace data with given items and dispatch changes in adapter only for items that have
      * changed (Based on evaluation from [BaseDiffUtilCallBack])
      */
-    fun updateItems(newItems: List<AdapterItem<*>>) {
-        val diffResult = DiffUtil.calculateDiff(BaseDiffUtilCallBack(data, newItems), false)
+    fun updateItems(data: List<AdapterItem<*>>) {
+        val diffResult = DiffUtil.calculateDiff(BaseDiffUtilCallBack(data, data), false)
 
-        data.clear()
-        data.addAll(newItems)
-
-        resetDataViewTypeIds()
+        resetData(data)
         resetLastAnimationPosition()
 
         try {
@@ -166,31 +166,32 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * should be called afterwards.
      */
     fun removeAllItems(notifyDataSetChanged: Boolean = true) {
-        val numItems = data.size
-        data.clear()
-
-        resetDataViewTypeIds()
-        resetLastAnimationPosition()
-
-        if (notifyDataSetChanged) {
-            notifyItemRangeRemoved(0, numItems)
-        }
+        removeItems(0, data.size, notifyDataSetChanged)
     }
 
     /**
      * Remove items from adapter by providing starting position and amount.
      * Also define whether [RecyclerView.Adapter.notifyDataSetChanged] should be called afterwards.
      */
+    @SuppressWarnings("WeakerAccess")
     fun removeItems(fromPosition: Int, itemCount: Int = 1, notifyDataSetChanged: Boolean = true) {
-        if (itemCount <= 0) {
+        if (itemCount <= 0 || fromPosition < 0 || fromPosition+itemCount > data.size) {
             return
         }
 
-        for (i in 0 until itemCount) {
-            data.removeAt(fromPosition+i)
+        // simplify if removing all
+        if (fromPosition == 0 && itemCount == data.size) {
+            data.clear()
+            dataViewTypeIds.clear()
+        }
+        // one by one as specified
+        else {
+            for (i in fromPosition+itemCount-1 downTo fromPosition) {
+                data.removeAt(i)
+                dataViewTypeIds.removeAt(i)
+            }
         }
 
-        removeFromDataViewTypeIds(fromPosition, itemCount)
         resetLastAnimationPosition()
 
         if (notifyDataSetChanged) {
@@ -219,11 +220,19 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * This is useful if all of the items for example have same side margins, so you don't have
      * to define same margin to each item in an adapter.
      */
+    @SuppressWarnings("WeakerAccess")
     fun setDefaultItemMargins(@Px start: Int = 0, @Px top: Int = 0, @Px end: Int = 0, @Px bottom: Int = 0) {
         this.defaultMarginStart = start
         this.defaultMarginTop = top
         this.defaultMarginEnd = end
         this.defaultMarginBottom = bottom
+    }
+
+    /**
+     * [setDefaultItemMargins] only setting start and end as [startAndEnd]
+     */
+    fun setDefaultItemSideMargins(@Px startAndEnd: Int) {
+        setDefaultItemMargins(start = startAndEnd, end = startAndEnd)
     }
     //endregion
 
@@ -288,10 +297,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
                 }
             // apply margins as defined by adapter item, or global default
             itemViewLayoutParams.setMargins(
-                if (adapterItem.marginStart == 0) adapterItem.marginStart else defaultMarginStart,
-                if (adapterItem.marginTop == 0) adapterItem.marginTop else defaultMarginTop,
-                if (adapterItem.marginEnd == 0) adapterItem.marginEnd else defaultMarginEnd,
-                if (adapterItem.marginBottom == 0) adapterItem.marginBottom else defaultMarginBottom
+                if (adapterItem.marginStart != 0) adapterItem.marginStart else defaultMarginStart,
+                if (adapterItem.marginTop != 0) adapterItem.marginTop else defaultMarginTop,
+                if (adapterItem.marginEnd != 0) adapterItem.marginEnd else defaultMarginEnd,
+                if (adapterItem.marginBottom != 0) adapterItem.marginBottom else defaultMarginBottom
             )
 
             // set params if not set until now. One might set it during getNewView call in adapter view
@@ -340,49 +349,27 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         }
     }
 
+    private fun resetData(data: List<AdapterItem<*>>) {
+        this.data.clear()
+        this.data.addAll(data)
+        this.dataViewTypeIds.clear()
+        this.dataViewTypeIds.addAll(MutableList(data.size) { VIEW_TYPE_ID_UNSET })
+    }
+
     private fun resetLastAnimationPosition() {
         lastAnimationPosition = -1
     }
 
-    private fun resetDataViewTypeIds() {
-        addDefaultToDataViewTypeIds(0)
-    }
-
-    private fun addDefaultToDataViewTypeIds(fromPosition: Int) {
-        if (!viewTypeCachingEnabled || data.isEmpty() || fromPosition > data.size) {
-            return
-        }
-        // preserve old array if adding
-        val oldArray: IntArray? =
-            if (fromPosition > dataViewTypeIds.size) dataViewTypeIds.copyOf()
-            else null
-        // new type ids array has same size as data with unset view types
-        dataViewTypeIds = IntArray(data.size) { VIEW_TYPE_ID_UNSET }
-        // if old data existed, copy it into beginning of new array, which now has bigger size
-        oldArray?.copyInto(dataViewTypeIds)
-    }
-
-    private fun removeFromDataViewTypeIds(fromPosition: Int, itemCount: Int) {
-        if (!viewTypeCachingEnabled || data.isEmpty() || fromPosition > data.lastIndex || itemCount <= 0) {
-            return
-        }
-        // split and combine, without removed element
-        dataViewTypeIds = dataViewTypeIds.copyOfRange(0, fromPosition-1).also {
-            if (fromPosition+itemCount <= dataViewTypeIds.lastIndex)
-                it.plus(dataViewTypeIds.copyOfRange(fromPosition+itemCount, dataViewTypeIds.lastIndex))
-        }
-    }
-
     private fun setDataViewTypeIdForPosition(position: Int, viewTypeId: Int) {
-        if (viewTypeCachingEnabled && dataViewTypeIds.size > position) {
+        if (viewTypeCachingEnabled && position < dataViewTypeIds.size) {
             dataViewTypeIds[position] = viewTypeId
         }
     }
 
     private fun hasCachedDataTypeIdForPosition(position: Int): Boolean {
-        return if (viewTypeCachingEnabled)
-            dataViewTypeIds.size > position && dataViewTypeIds[position] != VIEW_TYPE_ID_UNSET
-        else false
+        return viewTypeCachingEnabled &&
+                position < dataViewTypeIds.size &&
+                dataViewTypeIds[position] != VIEW_TYPE_ID_UNSET
     }
     //endregion
 }
