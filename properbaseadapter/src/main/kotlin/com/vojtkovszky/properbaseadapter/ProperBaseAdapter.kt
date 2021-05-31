@@ -113,10 +113,10 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * @param notifyItemRangeChanged defines whether [RecyclerView.Adapter.notifyDataSetChanged]
      * should be called afterwards.
      */
-    fun addItems(dataObjects: List<AdapterItem<*>>?,
+    fun addItems(dataObjects: List<AdapterItem<*>>,
                  index: Int = data.size,
                  notifyItemRangeChanged: Boolean = true) {
-        if (dataObjects.isNullOrEmpty()) {
+        if (dataObjects.isEmpty()) {
             return
         }
 
@@ -135,7 +135,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * Set items to the the adapter and define whether [RecyclerView.Adapter.notifyDataSetChanged]
      * should be called afterwards.
      */
-    fun setItems(data: MutableList<AdapterItem<*>>, notifyDataSetChanged: Boolean = true) {
+    fun setItems(data: List<AdapterItem<*>>, notifyDataSetChanged: Boolean = true) {
         resetData(data)
         resetLastAnimationPosition()
 
@@ -148,7 +148,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * Replace data with given items and dispatch changes in adapter only for items that have
      * changed (Based on evaluation from [BaseDiffUtilCallBack])
      */
-    fun updateItems(data: MutableList<AdapterItem<*>>) {
+    fun updateItems(data: List<AdapterItem<*>>) {
         val diffResult = DiffUtil.calculateDiff(BaseDiffUtilCallBack(data, data), false)
 
         resetData(data)
@@ -349,7 +349,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
         }
     }
 
-    private fun resetData(data: MutableList<AdapterItem<*>>) {
+    private fun resetData(data: List<AdapterItem<*>>) {
         this.data.clear()
         this.data.addAll(data)
         this.dataViewTypeIds.clear()

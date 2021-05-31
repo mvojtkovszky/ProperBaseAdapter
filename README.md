@@ -91,18 +91,21 @@ override fun onCreate(savedInstanceState: Bundle?) {
 <br/>You're of course not required use a provided BaseRecyclerViewImplementation and simply construct ProperBaseAdapter yourself and set it to your RecyclerView.\
 <br/>Make use of multiple adapter's public methods based on your needs:
 ``` kotlin
-fun addItems(dataObjects: List<AdapterItem<*>>?, notifyItemRangeChanged: Boolean = true): Unit
 fun getItemAt(position: Int): AdapterItem<*>?
 fun getItemByViewTag(viewTag: Any): AdapterItem<*>?
 fun getItemTypeAt(position: Int): KClass<*>
 fun getPositionForItemWithViewTag(viewTag: Any): Int?
-fun notifyItemWithViewTagChanged(viewTag: Any): Unit
-fun updateItems(newItems: List<AdapterItem<*>>): Unit
-fun removeAllItems(notifyDataSetChanged: Boolean = true): Unit
+
+fun addItems(data: List<AdapterItem<*>>, index: Int = data.size, notifyItemRangeChanged: Boolean = true): Unit
+fun setItems(data: List<AdapterItem<*>>, notifyDataSetChanged: Boolean = true): Unit
+fun updateItems(data: List<AdapterItem<*>>): Unit
 fun removeItems(fromPosition: Int, itemCount: Int = 1, notifyDataSetChanged: Boolean = true): Unit
-fun setItems(newData: MutableList<AdapterItem<*>>, notifyDataSetChanged: Boolean = true): Unit
+fun removeAllItems(notifyDataSetChanged: Boolean = true): Unit
+
+fun notifyItemWithViewTagChanged(viewTag: Any): Unit
 fun hasStickyHeaders(): Boolean
 fun setDefaultItemMargins(start: Int = 0, top: Int = 0, end: Int = 0, bottom: Int = 0): Unit
+fun setDefaultItemSideMargins(@Px startAndEnd: Int): Unit
 ```
 
 ## Nice! How do I get started?
