@@ -1,7 +1,6 @@
 package com.vojtkovszky.properbaseadapter.example
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -29,7 +28,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
                 delayMillis = 500)
     }
 
-    override fun getAdapterData(data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
+    override fun getAdapterData(adapter: ProperBaseAdapter, data: MutableList<AdapterItem<*>>): MutableList<AdapterItem<*>> {
         // let's put an image on top
         data.add(ImageViewItem(ContextCompat.getDrawable(this, android.R.drawable.star_big_on))
                 .withTopBottomMargins(resources.getDimensionPixelSize(R.dimen.dp16)))
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
         // and another image for the last row
         data.add(ImageViewItem(ContextCompat.getDrawable(this, android.R.drawable.ic_btn_speak_now))
-                .withMargins(marginBottom = resources.getDimensionPixelSize(R.dimen.dp16))
+                .withMargins(bottom = resources.getDimensionPixelSize(R.dimen.dp16))
                 .withViewTag("BOTTOM_IMAGE"))
 
         return data
