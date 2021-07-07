@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity(), ProperBaseAdapterImplementation {
 
     override fun getNewLayoutManager(): RecyclerView.LayoutManager? {
         return getRecyclerView()?.let {
+            // demonstration of how to use grid layout and determine span size based on item type
             GridLayoutManager(it.context, SPAN_SIZE).apply {
                 spanSizeLookup = object : SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
