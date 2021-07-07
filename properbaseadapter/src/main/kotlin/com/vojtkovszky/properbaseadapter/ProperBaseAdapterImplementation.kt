@@ -72,6 +72,14 @@ interface ProperBaseAdapterImplementation {
     fun isLifecycleValid(): Boolean = true
 
     /**
+     * This method will be called every time [refreshRecyclerView] completes.
+     * Override is optional.
+     */
+    fun onRecyclerViewRefreshed() {
+        return
+    }
+
+    /**
      * Trigger recycler view refresh with data provided in [getAdapterData].
      * In order to see changes, RecyclerView should not be null at this point.
      *
@@ -141,6 +149,8 @@ interface ProperBaseAdapterImplementation {
             if (recyclerView.layoutManager is LinearLayoutManager) {
                 it.linearLayoutManagerOrientation = (recyclerView.layoutManager as LinearLayoutManager).orientation
             }
+            // make this a default restoration state policy
+            it.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
 
         // different behaviour based on refresh type
@@ -161,5 +171,8 @@ interface ProperBaseAdapterImplementation {
         if (recyclerView.adapter == null) {
             recyclerView.adapter = adapter
         }
+
+        // all done, call refreshed method
+        onRecyclerViewRefreshed()
     }
 }

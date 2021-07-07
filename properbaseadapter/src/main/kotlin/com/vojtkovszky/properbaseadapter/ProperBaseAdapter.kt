@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 /**
  * Created by Marcel Vojtkovszky on 2019/07/23.
  */
-@Suppress("Unused")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableListOf()):
     RecyclerView.Adapter<AdapterViewHolder<View>>() {
 
@@ -25,7 +25,6 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * [getItemViewType] is required from the item, it is retrieved from cache rather than calculated
      * again.
      */
-    @SuppressWarnings("WeakerAccess")
     var viewTypeCachingEnabled = true
 
     /**
@@ -173,7 +172,6 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * Remove items from adapter by providing starting position and amount.
      * Also define whether [RecyclerView.Adapter.notifyDataSetChanged] should be called afterwards.
      */
-    @SuppressWarnings("WeakerAccess")
     fun removeItems(fromPosition: Int, itemCount: Int = 1, notifyDataSetChanged: Boolean = true) {
         if (itemCount <= 0 || fromPosition < 0 || fromPosition+itemCount > data.size) {
             return
@@ -220,7 +218,6 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * This is useful if all of the items for example have same side margins, so you don't have
      * to define same margin to each item in an adapter.
      */
-    @SuppressWarnings("WeakerAccess")
     fun setDefaultItemMargins(@Px start: Int = 0, @Px top: Int = 0, @Px end: Int = 0, @Px bottom: Int = 0) {
         this.defaultMarginStart = start
         this.defaultMarginTop = top
