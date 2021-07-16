@@ -148,7 +148,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * changed (Based on evaluation from [BaseDiffUtilCallBack])
      */
     fun updateItems(data: List<AdapterItem<*>>) {
-        val diffResult = DiffUtil.calculateDiff(BaseDiffUtilCallBack(data, data), false)
+        val diffResult = DiffUtil.calculateDiff(BaseDiffUtilCallBack(this.data, data), false)
 
         resetData(data)
         resetLastAnimationPosition()
