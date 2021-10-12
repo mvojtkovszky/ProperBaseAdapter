@@ -12,7 +12,6 @@ android {
     defaultConfig {
         minSdkVersion project.properties['minSdkVersion'] as Integer
         targetSdkVersion project.properties['targetSdkVersion'] as Integer
-        versionName project.properties['versionName'] as String
     }
 
     sourceSets {
@@ -27,8 +26,10 @@ android {
 }
 
 dependencies {
+    /* https://developer.android.com/jetpack/androidx/releases/core */
     implementation 'androidx.core:core-ktx:1.6.0'
 
+    /* https://developer.android.com/jetpack/androidx/releases/recyclerview */
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     testImplementation 'junit:junit:4.13.2'
