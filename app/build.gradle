@@ -18,10 +18,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -29,10 +25,22 @@ android {
         }
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    compileOptions {
+        sourceCompatibility project.properties['javaVersion']
+        targetCompatibility project.properties['javaVersion']
+    }
+
+    kotlinOptions {
+        jvmTarget=project.properties['javaVersion']
+    }
+
     buildFeatures {
         viewBinding true
     }
-    namespace 'com.vojtkovszky.properbaseadapter.example'
 }
 
 dependencies {
