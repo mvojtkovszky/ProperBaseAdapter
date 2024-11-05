@@ -40,7 +40,7 @@ class StickyHeaderItemDecoration(
                 motionEvent: MotionEvent
             ): Boolean {
                 return if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                    motionEvent.y <= currentHeader?.second?.itemView?.bottom ?: 0
+                    motionEvent.y <= (currentHeader?.second?.itemView?.bottom ?: 0)
                 } else false
             }
         })
@@ -102,19 +102,10 @@ class StickyHeaderItemDecoration(
         if (!shouldFadeOutHeader) {
             c.clipRect(0, paddingTop, c.width, paddingTop + currentHeader.height)
         } else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                c.saveLayerAlpha(
-                    RectF(0f, 0f, c.width.toFloat(), c.height.toFloat()),
-                    ((nextHeader.top - paddingTop) / (nextHeader.height.toFloat()) * 255).toInt()
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                c.saveLayerAlpha(
-                    0f, 0f, c.width.toFloat(), c.height.toFloat(),
-                    ((nextHeader.top - paddingTop) / (nextHeader.height.toFloat()) * 255).toInt(),
-                    Canvas.ALL_SAVE_FLAG
-                )
-            }
+            c.saveLayerAlpha(
+                RectF(0f, 0f, c.width.toFloat(), c.height.toFloat()),
+                ((nextHeader.top - paddingTop) / (nextHeader.height.toFloat()) * 255).toInt()
+            )
         }
         c.translate(0f, (nextHeader.top - currentHeader.height).toFloat())
 
