@@ -1,5 +1,6 @@
 package com.vojtkovszky.properbaseadapter
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -134,6 +135,7 @@ class ProperBaseAdapter constructor(data: MutableList<AdapterItem<*>> = mutableL
      * Set items to the the adapter and define whether [RecyclerView.Adapter.notifyDataSetChanged]
      * should be called afterwards.
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun setItems(data: List<AdapterItem<*>>, notifyDataSetChanged: Boolean = true) {
         resetData(data)
         resetLastAnimationPosition()
